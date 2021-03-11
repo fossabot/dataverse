@@ -7,6 +7,14 @@ public class SolrField {
     private SolrType solrType;
     private boolean allowedToBeMultivalued;
     private boolean facetable;
+    
+    public SolrField(String name, SolrType solrType) {
+        this(name, solrType, false, false);
+    }
+    
+    public SolrField(String name, SolrType solrType, boolean allowToBeMultivalued) {
+        this(name, solrType, allowToBeMultivalued, false);
+    }
 
     public SolrField(String name, SolrType solrType, boolean allowedToBeMultivalued, boolean facetable) {
         this.nameSearchable = name;
@@ -26,6 +34,15 @@ public class SolrField {
              */
             this.nameFacetable = name + "_s";
         }
+    }
+    
+    /**
+     * If this field can be used as a search facet, we will return the facetable name.
+     * This means a field name that can be used with dynamic Solr fields (_s/_ss).
+     * @return Searchable or facetable name, depending on {@code facetable}
+     */
+    public String getName() {
+        return this.facetable ? this.nameFacetable : this.nameSearchable;
     }
 
     public String getNameSearchable() {
@@ -51,30 +68,5 @@ public class SolrField {
     public boolean isFacetable() {
         return facetable;
     }
-
-    public enum SolrType {
-
-        /**
-         * @todo: make this configurable from text_en to text_general or
-         * non-English languages? We changed it to text_en to improve English
-         * language searching in https://github.com/IQSS/dataverse/issues/444
-         *
-         * We want to get away from always using "text_en" (especially to
-         * support range queries) in
-         * https://github.com/IQSS/dataverse/issues/370
-         */
-        STRING("string"), TEXT_EN("text_en"), INTEGER("int"), LONG("long"), DATE("text_en"), EMAIL("text_en");
-
-        private String type;
-
-        private SolrType(String string) {
-            type = string;
-        }
-
-        public String getType() {
-            return type;
-        }
-
-    }
-
+    
 }
