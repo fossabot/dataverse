@@ -47,21 +47,22 @@ package edu.harvard.iq.dataverse.search;
  * want). See also
  * http://stackoverflow.com/questions/16559911/facet-query-will-give-wrong-output-on-dynamicfield-in-solr
  */
-public class SearchFields {
-
+public enum SearchFields {
+    
     /**
      * @todo: consider making various dynamic fields (_s) static in schema.xml
      * instead. Should they be stored in the database?
      */
+    
     // standard fields from example/solr/collection1/conf/schema.xml
     // (but we are getting away from these...)
-    public static final String ID = "id";
+    ID(new SolrField("id", SolrType.STRING)),
     /**
      * Determine which DvObjects you might want to target for reindexing after
      * an upgrade such as between Dataverse 4.2 and 4.3.
      */
-    public static final String DATAVERSE_VERSION_INDEXED_BY = "dataverseVersionIndexedBy_s";
-    public static final String NAME = "name";
+    DATAVERSE_VERSION_INDEXED_BY(new SolrField("dataverseVersionIndexedBy", SolrType.STRING, false, true)),
+    NAME(new SolrField("name", SolrType.STRING)),
     /**
      * @todo Do we want to support finding dataverses, datasets, and files with
      * a query for description:foo? Maybe not, since people will probably just
@@ -71,32 +72,32 @@ public class SearchFields {
      *
      * See also https://redmine.hmdc.harvard.edu/issues/3745
      */
-    public static final String DESCRIPTION = "description";
+    DESCRIPTION(new SolrField("description", SolrType.TEXT_EN)),
     /**
      * Identifiers differ per DvObject: alias for dataverses, globalId for
      * datasets, and database id for files.
      */
-    public static final String IDENTIFIER = "identifier";
+    IDENTIFIER(new SolrField("identifier", SolrType.STRING)),
     /**
      * Visible in the GUI as a facet to click: "Harvested" vs. "Root Dataverse".
      */
-    public static final String METADATA_SOURCE = "metadataSource";
+    METADATA_SOURCE(new SolrField("metadataSource", SolrType.STRING)),
     /**
      * Internal boolean used when creating OAI sets, for example.
      */
-    public static final String IS_HARVESTED = "isHarvested";
+    IS_HARVESTED(new SolrField("isHarvested", SolrType.BOOLEAN)),
     /**
      * Such as https://doi.org/10.5072/FK2/HXI35W
      *
      * For files, the URL will be the parent dataset.
      */
-    public static final String PERSISTENT_URL = "persistentUrl";
-    public static final String UNF = "unf";
-    public static final String DATAVERSE_NAME = "dvName";
-    public static final String DATAVERSE_ALIAS = "dvAlias";
-    public static final String DATAVERSE_AFFILIATION = "dvAffiliation";
-    public static final String DATAVERSE_DESCRIPTION = "dvDescription";
-    public static final String DATAVERSE_CATEGORY = "dvCategory";
+    PERSISTENT_URL(new SolrField("persistentUrl", SolrType.STRING)),
+    UNF(new SolrField("unf", SolrType.STRING)),
+    DATAVERSE_NAME(new SolrField("dvName", SolrType.TEXT_EN)),
+    DATAVERSE_ALIAS(new SolrField("dvAlias", SolrType.TEXT_EN)),
+    DATAVERSE_AFFILIATION(new SolrField("dvAffiliation", SolrType.TEXT_EN)),
+    DATAVERSE_DESCRIPTION(new SolrField("dvDescription", SolrType.TEXT_EN)),
+    DATAVERSE_CATEGORY(new SolrField("dvCategory", SolrType.STRING)),
     
     /**
      * What is dvSubject_en for? How does it get populated into Solr? The
@@ -107,7 +108,7 @@ public class SearchFields {
      * field Solr doesn't know about) why doesn't Solr complain when we "index
      * all"? See also https://github.com/IQSS/dataverse/issues/1681
      */
-    public static final String DATAVERSE_SUBJECT = "dvSubject";
+    DATAVERSE_SUBJECT(new SolrField("dvSubject", SolrType.STRING, true)),
     /**
      * A "collapsed" facet (e.g. applies to both dataverses and datasets and is
      * merged as a single facet in the GUI) like affiliation that needs to match
@@ -116,20 +117,20 @@ public class SearchFields {
      * be different from "subject" which is used for general search but maybe we
      * could have a convention like "subjectFacet" for the facets?
      */
-    public static final String SUBJECT = "subject_ss";
+    SUBJECT(new SolrField("subject", SolrType.STRING, true, true)),
     
     /*
      * The category of the Dataverse (aka Dataverse Type). Named differently
      * than DATAVERSE_CATEGORY so it can be searched but doesn't show up on the
      * homepage facet
      */
-    public static final String CATEGORY_OF_DATAVERSE = "categoryOfDataverse";
+    CATEGORY_OF_DATAVERSE(new SolrField("categoryOfDataverse", SolrType.STRING)),
     
     /*
      * The alias of the dataverse. This named differently because IDENTIFIER
      * is used for dataset for its own identifier.
      */
-    public static final String IDENTIFIER_OF_DATAVERSE = "identifierOfDataverse";
+    IDENTIFIER_OF_DATAVERSE(new SolrField("identifierOfDataverse", SolrType.STRING)),
     
     /**
      * @todo think about how to tie the fact that this needs to be multivalued
@@ -143,15 +144,15 @@ public class SearchFields {
      * string so we can facet on it and it needs to be multivalued because
      * "Author Affiliation" can be multivalued.
      */
-    public static final String AFFILIATION = "affiliation_ss";
-    public static final String FILE_NAME = "fileName";
-    public static final String FILE_DESCRIPTION = "fileDescription";
-    public static final String FILE_PERSISTENT_ID = "filePersistentId";
+    AFFILIATION(new SolrField("affiliation", SolrType.STRING, true, true)),
+    FILE_NAME(new SolrField("fileName", SolrType.TEXT_EN, true)),
+    FILE_DESCRIPTION(new SolrField("fileDescription", SolrType.TEXT_EN)),
+    FILE_PERSISTENT_ID(new SolrField("filePersistentId", SolrType.TEXT_EN)),
     /**
      * Can be multivalued and includes both "friendly" and "group" versions:
      * "PNG Image", "image"
      */
-    public static final String FILE_TYPE_SEARCHABLE = "fileType";
+    FILE_TYPE_SEARCHABLE(new SolrField("fileType", SolrType.TEXT_EN, true)),
     /**
      * @todo Thie static variable not named properly. We want to expose an
      * acutal MIME Type in https://github.com/IQSS/dataverse/issues/1595 . See
@@ -159,109 +160,128 @@ public class SearchFields {
      *
      * i.e. "PNG Image"
      */
-    public static final String FILE_TYPE_FRIENDLY = "fileTypeDisplay";
-    public static final String FILE_CONTENT_TYPE = "fileContentType";
+    FILE_TYPE_FRIENDLY(new SolrField("fileTypeDisplay", SolrType.STRING)),
+    FILE_CONTENT_TYPE(new SolrField("fileContentType", SolrType.STRING)),
     /**
      * Used as a facet for file groups like "image" or "document"
      */
-    public static final String FILE_TYPE = "fileTypeGroupFacet";
-    public static final String FILE_SIZE_IN_BYTES = "fileSizeInBytes";
-    public static final String FILE_MD5 = "fileMd5";
-    public static final String FILE_CHECKSUM_TYPE = "fileChecksumType";
-    public static final String FILE_CHECKSUM_VALUE = "fileChecksumValue";
-    public static final String FILENAME_WITHOUT_EXTENSION = "fileNameWithoutExtension";
+    FILE_TYPE(new SolrField("fileTypeGroupFacet", SolrType.STRING)),
+    FILE_SIZE_IN_BYTES(new SolrField("fileSizeInBytes", SolrType.LONG)),
+    FILE_MD5(new SolrField("fileMd5", SolrType.STRING)),
+    FILE_CHECKSUM_TYPE(new SolrField("fileChecksumType", SolrType.STRING)),
+    FILE_CHECKSUM_VALUE(new SolrField("fileChecksumValue", SolrType.STRING)),
+    FILENAME_WITHOUT_EXTENSION(new SolrField("fileNameWithoutExtension", SolrType.TEXT_EN, true)),
     /**
      * Indexed as a string so we can facet on it.
      */
-    public static final String FILE_TAG = "fileTag";
+    FILE_TAG(new SolrField("fileTag", SolrType.STRING, true)),
     /**
      * Indexed as text_en so it's searchable by lower case etc.
      */
-    public static final String FILE_TAG_SEARCHABLE = "fileTags";
+    FILE_TAG_SEARCHABLE(new SolrField("fileTags", SolrType.TEXT_EN, true)),
     
     /**
      * Internal boolean indicating that the file has been deleted in the draft version.
      */
-    public static final String FILE_DELETED = "fileDeleted";
+    FILE_DELETED(new SolrField("fileDeleted", SolrType.BOOLEAN)),
     /*
      * (tabular) Data Tags are indexed as a string, since we are only planning to
      * use these in facet-like, exact searches:
      */
-    public static final String TABDATA_TAG = "tabularDataTag";
-    public static final String ACCESS = "fileAccess";
+    TABDATA_TAG(new SolrField("tabularDataTag", SolrType.STRING, true)),
+    ACCESS(new SolrField("fileAccess", SolrType.STRING, true)),
 
-    public static final String SUBTREE = "subtreePaths";
+    SUBTREE(new SolrField("subtreePaths", SolrType.STRING, true)),
 
     // i.e. http://localhost:8080/search.xhtml?q=*&fq0=citationdate_dt:[2008-01-01T00%3A00%3A00Z+TO+2011-01-01T00%3A00%3A00Z%2B1YEAR}
-//    public static final String PRODUCTION_DATE_ORIGINAL = DatasetFieldConstant.productionDate + "_dt";
-//    public static final String PRODUCTION_DATE_YEAR_ONLY = DatasetFieldConstant.productionDate + "_i";
-//    public static final String DISTRIBUTION_DATE_ORIGINAL = DatasetFieldConstant.distributionDate + "_dt";
-//    public static final String DISTRIBUTION_DATE_YEAR_ONLY = DatasetFieldConstant.distributionDate + "_i";
+//    public static final String PRODUCTION_DATE_ORIGINAL = DatasetFieldConstant.productionDate + "_dt"),
+//    public static final String PRODUCTION_DATE_YEAR_ONLY = DatasetFieldConstant.productionDate + "_i"),
+//    public static final String DISTRIBUTION_DATE_ORIGINAL = DatasetFieldConstant.distributionDate + "_dt"),
+//    public static final String DISTRIBUTION_DATE_YEAR_ONLY = DatasetFieldConstant.distributionDate + "_i"),
     /**
      * Solr refers to "relevance" as "score"
      */
-    public static final String RELEVANCE = "score";
+    RELEVANCE(new SolrField("score", SolrType.INTERNAL)),
 
     /**
      * A dataverse, a dataset, or a file.
      */
-    public static final String TYPE = "dvObjectType";
-    public static final String NAME_SORT = "nameSort";
+    TYPE(new SolrField("dvObjectType", SolrType.STRING)),
+    NAME_SORT(new SolrField("nameSort", SolrType.ALPHAONLYSORT)),
     // PUBLICATION_YEAR used to be called PUBLICATION_DATE.
-    public static final String PUBLICATION_YEAR = "publicationDate";
-    public static final String RELEASE_OR_CREATE_DATE = "dateSort"; 
+    // TODO: shouldn't we rename the field in Solr???
+    PUBLICATION_YEAR(new SolrField("publicationDate", SolrType.STRING)),
+    RELEASE_OR_CREATE_DATE(new SolrField("dateSort", SolrType.DATE)),
 
 
-    public static final String DEFINITION_POINT = "definitionPointDocId";
-    public static final String DEFINITION_POINT_DVOBJECT_ID = "definitionPointDvObjectId";
-    public static final String DISCOVERABLE_BY = "discoverableBy";
+    DEFINITION_POINT(new SolrField("definitionPointDocId", SolrType.STRING)),
+    DEFINITION_POINT_DVOBJECT_ID(new SolrField("definitionPointDvObjectId", SolrType.STRING)),
+    DISCOVERABLE_BY(new SolrField("discoverableBy", SolrType.STRING, true)),
 
     /**
      * i.e. "Unpublished", "Draft" (multivalued)
      */
-    public static final String PUBLICATION_STATUS = "publicationStatus";
+    PUBLICATION_STATUS(new SolrField("publicationStatus", SolrType.STRING, true)),
     /**
      * @todo reconcile different with Solr schema.xml where type is Long rather
      * than String.
      */
-    public static final String ENTITY_ID = "entityId";
-    public static final String PARENT_NAME = "parentName";
-    public static final String PARENT_ID = "parentId";
-    public static final String PARENT_IDENTIFIER = "parentIdentifier";
+    ENTITY_ID(new SolrField("entityId", SolrType.LONG)),
+    PARENT_NAME(new SolrField("parentName", SolrType.STRING)),
+    // Long standing todo for this field: convert from string to long
+    PARENT_ID(new SolrField("parentId", SolrType.LONG)),
+    PARENT_IDENTIFIER(new SolrField("parentIdentifier", SolrType.STRING)),
     /**
      * @todo Should we add a "parentCitationHtml" field now or wait for demand
      * for it?
      */
-    public static final String PARENT_CITATION = "parentCitation";
+    PARENT_CITATION(new SolrField("parentCitation", SolrType.STRING)),
 
-    public static final String DATASET_DESCRIPTION = "dsDescriptionValue";
+    // THIS FIELD SEEMS UNUSED SINCE A LONG TIME (not present in schema.xml) -> commented out 2021-03-10
+    // DATASET_DESCRIPTION(new SolrField("dsDescriptionValue", SolrType.TEXT_EN)),
     /**
      * In Datavese 4.3 and earlier "citation" was indexed as the "online" or
      * HTML version, with the DOI link wrapped in an href tag but now it's the
      * plaintext version and anyone who was depending on the old version can
      * switch to the new "citationHTML" field.
      */
-    public static final String DATASET_CITATION = "citation";
-    public static final String DATASET_CITATION_HTML = "citationHtml";
-    public static final String DATASET_DEACCESSION_REASON = "deaccessionReason";
+    DATASET_CITATION(new SolrField("citation", SolrType.STRING)),
+    DATASET_CITATION_HTML(new SolrField("citationHtml", SolrType.STRING)),
+    DATASET_DEACCESSION_REASON(new SolrField("deaccessionReason", SolrType.STRING)),
     /**
      * In contrast to PUBLICATION_YEAR, this field applies only to datasets for
  more targeted results for just datasets. The format is YYYY (i.e.
      * "2015").
      */
-    public static final String DATASET_PUBLICATION_DATE = "dsPublicationDate";
-    public static final String DATASET_PERSISTENT_ID = "dsPersistentId";
-    public static final String DATASET_VERSION_ID = "datasetVersionId";
+    DATASET_PUBLICATION_DATE(new SolrField("dsPublicationDate", SolrType.STRING)),
+    DATASET_PERSISTENT_ID(new SolrField("dsPersistentId", SolrType.TEXT_EN)),
+    DATASET_VERSION_ID(new SolrField("datasetVersionId", SolrType.LONG)),
 
-    public static final String VARIABLE_NAME = "variableName";
-    public static final String VARIABLE_LABEL = "variableLabel";
-    public static final String LITERAL_QUESTION = "literalQuestion";
-    public static final String INTERVIEW_INSTRUCTIONS = "interviewInstructions";
-    public static final String POST_QUESTION = "postQuestion";
-    public static final String VARIABLE_UNIVERSE = "variableUniverse";
-    public static final String VARIABLE_NOTES = "variableNotes";
+    VARIABLE_NAME(new SolrField("variableName", SolrType.TEXT_EN, true)),
+    VARIABLE_LABEL(new SolrField("variableLabel", SolrType.TEXT_EN, true)),
+    LITERAL_QUESTION(new SolrField("literalQuestion", SolrType.TEXT_EN, true)),
+    INTERVIEW_INSTRUCTIONS(new SolrField("interviewInstructions", SolrType.TEXT_EN, true)),
+    POST_QUESTION(new SolrField("postQuestion", SolrType.TEXT_EN, true)),
+    VARIABLE_UNIVERSE(new SolrField("variableUniverse", SolrType.TEXT_EN, true)),
+    VARIABLE_NOTES(new SolrField("variableNotes", SolrType.TEXT_EN, true)),
 
 
-    public static final String FULL_TEXT = "_text_";
-
+    FULL_TEXT(new SolrField("_text_", SolrType.TEXT_GENERAL, true));
+    
+    private final SolrField field;
+    
+    SearchFields(SolrField field) {
+        this.field = field;
+    }
+    
+    public String getName() { return field.getName(); }
+    public String getNameSearchable() {
+        return field.getNameSearchable();
+    }
+    public String getNameFacetable() {
+        return field.getNameFacetable();
+    }
+    public SolrType getSolrType() {
+        return field.getSolrType();
+    }
 }
