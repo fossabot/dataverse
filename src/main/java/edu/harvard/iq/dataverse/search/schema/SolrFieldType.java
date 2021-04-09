@@ -1,4 +1,4 @@
-package edu.harvard.iq.dataverse.search;
+package edu.harvard.iq.dataverse.search.schema;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,7 +12,7 @@ import java.util.Optional;
  *       Down the road, it might be interesting to define and configure some <fieldType> completely
  *       via Managed Schema API.
  */
-public enum SolrType {
+public enum SolrFieldType {
         /**
      * @todo: make this configurable from text_en to text_general or
      * non-English languages? We changed it to text_en to improve English
@@ -34,8 +34,9 @@ public enum SolrType {
     // this type marks a field as Solr generated.
     INTERNAL(null, null),
     
-    // TODO: textfields do have more than this (analysers, tokenizers, ...).
+    // TODO: Especially textfields do have more than this (analysers, tokenizers, ...).
     //       We do not yet depict these in this class and it might be better suited for a class on its own.
+    //       https://solr.apache.org/guide/8_8/field-type-definitions-and-properties.html#field-type-definitions-in-schema-xml
     TEXT_EN("text_en", "solr.TextField"),
     TEXT_GENERAL("text_general", "solr.TextField", Map.of(Property.MULTIVALUED, true)),
     TEXT_GENERAL_REV("text_general_rev", "solr.TextField"),
@@ -54,35 +55,39 @@ public enum SolrType {
     
     private final String typeName;
     private final String typeClass;
+    // TODO: Field types have a few non-boolean properties. We might need to address this later by using a wrapping class
     private final Map<Property,Boolean> properties;
     
-    public SolrType getTypeByName(String typeName) {
+    // TODO: Later on, we should be able to save more configuration aspects as Analysers (including Tokenizers, Filters, ...)
+    //       and Similarity.
+    
+    public SolrFieldType getTypeByName(String typeName) {
         return lookup.get(typeName);
     }
-    private final static HashMap<String, SolrType> lookup = new HashMap<>();
+    private final static HashMap<String, SolrFieldType> lookup = new HashMap<>();
     static {
-        for (SolrType st : SolrType.values()) {
-            lookup.put(st.typeName(), st);
+        for (SolrFieldType st : SolrFieldType.values()) {
+            lookup.put(st.getName(), st);
         }
     }
     
-    SolrType(String typeName, String typeClass) {
+    SolrFieldType(String typeName, String typeClass) {
         this.typeName = typeName;
         this.typeClass = typeClass;
         // immutable empty map
         this.properties = Map.of();
     }
     
-    SolrType(String typeName, String typeClass, Map<Property,Boolean> properties) {
+    SolrFieldType(String typeName, String typeClass, Map<Property,Boolean> properties) {
         this.typeName = typeName;
         this.typeClass = typeClass;
         this.properties = properties;
     }
     
-    public String typeName() {
+    public String getName() {
         return typeName;
     }
-    public String typeClass() {
+    public String getTypeClass() {
         return typeClass;
     }
     public boolean hasProperty(Property p) {
