@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 /**
  * Solr <field>, <dynamicField>, <fieldType> base class.
  *
- * See {@link SolrFieldType}, {@link SolrDynamicField}, {@link SolrField} for implementing subclasses.
+ * See {@link SolrFieldType}, {@link SolrDynamicField}, {@link SolrStaticField} for implementing subclasses.
  */
 public class SolrFieldBase {
     
