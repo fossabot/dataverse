@@ -38,7 +38,7 @@ public final class SolrFieldType extends SolrFieldBase {
     public static final SolrFieldType TEXT_EN = new SolrFieldType("text_en", "solr.TextField");
     public static final SolrFieldType TEXT_GENERAL = new SolrFieldType("text_general", "solr.TextField", Map.of(SolrFieldProperty.MULTIVALUED, "true"));
     public static final SolrFieldType TEXT_GENERAL_REV = new SolrFieldType("text_general_rev", "solr.TextField");
-    public static final SolrFieldType ALPHAONLYSORT = new SolrFieldType("alphaOnlySort", "solr.TextField");
+    public static final SolrFieldType ALPHA_ONLY_SORT = new SolrFieldType("alphaOnlySort", "solr.TextField");
     
     private SolrFieldType(String typeName, String typeClass) {
         super(typeName);
