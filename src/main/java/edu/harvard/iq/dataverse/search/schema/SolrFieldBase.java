@@ -64,14 +64,16 @@ public class SolrFieldBase {
      * (e.g., _version_) are reserved."
      *
      * This may be overriden by {@link SolrDynamicField}, as names for these always start with "*_" matchers.
+     * Visibility "package private" to provide relaxed testability.
      * @param name The name to check. Null-safe.
      * @return true if matching Solr convention, false otherwise.
      * @see <a href="https://solr.apache.org/guide/8_8/defining-fields.html">Solr Docs: Defining Fields</a>
      */
-    public static boolean isValidName(String name) {
+    boolean isValidName(String name) {
         if (name == null) return false;
         return validNameMatcher.reset(name).matches();
     }
+    
     public final boolean hasProperty(SolrFieldProperty p) {
         return properties.containsKey(p);
     }
