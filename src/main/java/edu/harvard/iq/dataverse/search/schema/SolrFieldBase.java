@@ -11,6 +11,25 @@ import java.util.regex.Pattern;
  */
 public class SolrFieldBase {
     
+    /**
+     * Enumeration of often / commonly used field property configurations, ready to reuse.
+     */
+    public enum StdConf {
+        S(Map.of(SolrFieldProperty.STORED, "true", SolrFieldProperty.INDEXED, "false", SolrFieldProperty.MULTIVALUED, "false")),
+        SI(Map.of(SolrFieldProperty.STORED, "true", SolrFieldProperty.INDEXED, "true", SolrFieldProperty.MULTIVALUED, "false")),
+        SIM(Map.of(SolrFieldProperty.STORED, "true", SolrFieldProperty.INDEXED, "true", SolrFieldProperty.MULTIVALUED, "true"));
+        
+        private Map<SolrFieldProperty, String> config;
+        
+        StdConf(Map<SolrFieldProperty, String> config) {
+            this.config = config;
+        }
+        
+        public Map<SolrFieldProperty, String> getConfig() {
+            return config;
+        }
+    }
+    
     protected static final Matcher validNameMatcher = Pattern.compile("^[A-Za-z_][\\w]+$").matcher("");
     protected final Map<SolrFieldProperty, String> properties = new EnumMap<>(SolrFieldProperty.class);
     

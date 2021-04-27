@@ -4,22 +4,6 @@ import java.util.Map;
 
 public class SolrStaticField extends SolrFieldBase {
     
-    public enum StdConf {
-        S(Map.of(SolrFieldProperty.STORED, "true", SolrFieldProperty.INDEXED, "false", SolrFieldProperty.MULTIVALUED, "false")),
-        SI(Map.of(SolrFieldProperty.STORED, "true", SolrFieldProperty.INDEXED, "true", SolrFieldProperty.MULTIVALUED, "false")),
-        SIM(Map.of(SolrFieldProperty.STORED, "true", SolrFieldProperty.INDEXED, "true", SolrFieldProperty.MULTIVALUED, "true"));
-    
-        private Map<SolrFieldProperty, String> config;
-    
-        StdConf(Map<SolrFieldProperty, String> config) {
-            this.config = config;
-        }
-    
-        public Map<SolrFieldProperty, String> getConfig() {
-            return config;
-        }
-    }
-    
     /**
      * Create a static Solr field, requiring a name and a type.
      * Will use a standard field config of "stored + indexed" ({@link StdConf#SI}).
