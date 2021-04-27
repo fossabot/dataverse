@@ -2,7 +2,7 @@ package edu.harvard.iq.dataverse.search.schema;
 
 import java.util.Map;
 
-public class SolrStaticField extends SolrFieldBase {
+public class SolrStaticField extends SolrField {
     
     /**
      * Create a static Solr field, requiring a name and a type.

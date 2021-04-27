@@ -4,7 +4,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class SolrDynamicField extends SolrFieldBase {
+public class SolrDynamicField extends SolrField {
     
     protected static final Matcher validNameMatcher = Pattern.compile("^\\*_[\\w]+$").matcher("");
     

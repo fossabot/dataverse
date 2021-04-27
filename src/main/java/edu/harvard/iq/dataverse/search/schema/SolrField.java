@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
  *
  * See {@link SolrFieldType}, {@link SolrDynamicField}, {@link SolrStaticField} for implementing subclasses.
  */
-public class SolrFieldBase {
+public class SolrField {
     
     /**
      * Enumeration of often / commonly used field property configurations, ready to reuse.
@@ -41,7 +41,7 @@ public class SolrFieldBase {
      * @throws IllegalArgumentException When nameProperty does not follow Solr naming convention.
      * @see #isValidName(String)
      */
-    SolrFieldBase(String nameProperty) {
+    SolrField(String nameProperty) {
         if(! isValidName(nameProperty))
             throw new IllegalArgumentException(nameProperty+" does not meet Solr naming convention.");
         this.properties.put(SolrFieldProperty.NAME, nameProperty);
@@ -83,8 +83,8 @@ public class SolrFieldBase {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof SolrFieldBase)) return false;
-        SolrFieldBase that = (SolrFieldBase) o;
+        if (!(o instanceof SolrField)) return false;
+        SolrField that = (SolrField) o;
         // Uniqueness is on names in Solr Schema.
         return this.getName().equals(that.getName());
     }
