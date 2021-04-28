@@ -1,6 +1,7 @@
 package edu.harvard.iq.dataverse;
 
 import edu.harvard.iq.dataverse.search.SolrField;
+import edu.harvard.iq.dataverse.search.schema.SolrFieldType;
 import edu.harvard.iq.dataverse.util.BundleUtil;
 
 import java.util.Collection;
@@ -33,9 +34,28 @@ public class DatasetFieldType implements Serializable, Comparable<DatasetFieldTy
 
     /**
      * The set of possible metatypes of the field. Used for validation and layout.
+     *
+     * Also maps the metadata block data types to the Solr Index data types.
      */
     public enum FieldType {
-        TEXT, TEXTBOX, DATE, EMAIL, URL, FLOAT, INT, NONE
+        TEXT(SolrFieldType.TEXT_EN),
+        TEXTBOX(SolrFieldType.TEXT_EN),
+        // TODO: This should be changed to SolrFieldType.DATE to allow for range queries etc.
+        DATE(SolrFieldType.TEXT_EN),
+        // Emails are not indexed to avoid data privacy issues.
+        EMAIL(null),
+        // TODO: This should be changed to SolrFieldType.STRING, as URLs are not easily tokenized anyway (for text_en).
+        //       If desired, we could also create a new text field type using the "UAX29 URL Email Tokenizer".
+        URL(SolrFieldType.TEXT_EN),
+        // TODO: This should be changed to SolrFieldType.FLOAT (for obvious reasons)
+        FLOAT(SolrFieldType.TEXT_EN),
+        // TODO: This should be changed to SolrFieldType.INT (for obvious reasons)
+        INT(SolrFieldType.TEXT_EN),
+        NONE(null);
+        
+        private final SolrFieldType solrType;
+        FieldType(SolrFieldType type) { this.solrType = type; }
+        public SolrFieldType getSolrType() { return solrType; }
     };    
     
     @Id
