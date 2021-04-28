@@ -3,10 +3,18 @@ package edu.harvard.iq.dataverse.search.schema;
 import java.util.Optional;
 
 public enum SolrFieldProperty {
+    // Used for <fieldType>, <dynamicField> and <field> only
     NAME("name", String.class, null),
+    
+    // Used for <fieldType> only
     CLASS("class", String.class, null),
+    
+    // Used for <dynamicField> and <field> only
     TYPE("type", String.class, null),
+    // Used for <dynamicField> and <field> only
     DEFAULT("default", String.class, null),
+    
+    /* The properties below are used for <fieldType>, <dynamicField> and <field> only */
     
     POSITIONINCREMENTGAP("positionIncrementGap", String.class, null),
     AUTOGENERATEPHRASEQUERIES("autoGeneratePhraseQueries", Boolean.class, null),
@@ -31,8 +39,13 @@ public enum SolrFieldProperty {
     TERMPAYLOADS("termPayloads", Boolean.class, "false"),
     REQUIRED("required", Boolean.class, "false"),
     USEDOCVALUESASSTORED("useDocValuesAsStored", Boolean.class, "true"),
-    LARGE("large", Boolean.class, "false");
+    LARGE("large", Boolean.class, "false"),
     
+    /* The properties below are used for <copyField> only */
+    
+    SOURCE("source", String.class, null),
+    DEST("dest", String.class, null),
+    MAXCHARS("maxChars", Integer.class, null);
     
     public final String fieldName;
     public final Class type;
