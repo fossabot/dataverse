@@ -1,5 +1,7 @@
 package edu.harvard.iq.dataverse.search.schema;
 
+import java.util.Objects;
+
 /**
  * A class to depict a Solr <copyField> in the schema of a collection/core.
  *
@@ -68,4 +70,17 @@ public class SolrCopyField {
     //       We should make sure that if "destination" is a dynamic field and "source" a static one, we
     //       create the <copyField> with a nonwildcard using destination string, reusing the static field name
     //       as a replacement for the wildcard.
+    
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof SolrCopyField)) return false;
+        SolrCopyField that = (SolrCopyField) o;
+        return sourceField.equals(that.sourceField) && destinationField.equals(that.destinationField);
+    }
+    
+    @Override
+    public int hashCode() {
+        return Objects.hash(sourceField, destinationField);
+    }
 }
