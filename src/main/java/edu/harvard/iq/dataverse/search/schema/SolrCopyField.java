@@ -63,4 +63,9 @@ public class SolrCopyField {
         else
             throw new IllegalArgumentException("Given property maxChars may not be < 1 or null.");
     }
+    
+    // TODO: When we go for validation / schema management, we need some mechanism to create the entry.
+    //       We should make sure that if "destination" is a dynamic field and "source" a static one, we
+    //       create the <copyField> with a nonwildcard using destination string, reusing the static field name
+    //       as a replacement for the wildcard.
 }

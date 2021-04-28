@@ -786,6 +786,8 @@ public class IndexServiceBean {
 
                 DatasetFieldType dsfType = dsf.getDatasetFieldType();
                 String solrFieldSearchable = dsfType.getSolrField().getNameSearchable();
+                // TODO: instead of doing this manually, we should use a <copyField> to copy the text based fields
+                //       into a string field (let the schema management take care of this).
                 String solrFieldFacetable = dsfType.getSolrField().getNameFacetable();
 
                 if (dsf.getValues() != null && !dsf.getValues().isEmpty() && dsf.getValues().get(0) != null && solrFieldSearchable != null) {
