@@ -15,9 +15,9 @@ public class SolrField {
      * Enumeration of often / commonly used field property configurations, ready to reuse.
      */
     public enum StdConf {
-        S(Map.of(SolrFieldProperty.STORED, "true", SolrFieldProperty.INDEXED, "false", SolrFieldProperty.MULTIVALUED, "false")),
-        SI(Map.of(SolrFieldProperty.STORED, "true", SolrFieldProperty.INDEXED, "true", SolrFieldProperty.MULTIVALUED, "false")),
-        SIM(Map.of(SolrFieldProperty.STORED, "true", SolrFieldProperty.INDEXED, "true", SolrFieldProperty.MULTIVALUED, "true"));
+        STORED(Map.of(SolrFieldProperty.STORED, "true", SolrFieldProperty.INDEXED, "false", SolrFieldProperty.MULTIVALUED, "false")),
+        STORED_INDEXED(Map.of(SolrFieldProperty.STORED, "true", SolrFieldProperty.INDEXED, "true", SolrFieldProperty.MULTIVALUED, "false")),
+        STORED_INDEXED_MULTIVALUED(Map.of(SolrFieldProperty.STORED, "true", SolrFieldProperty.INDEXED, "true", SolrFieldProperty.MULTIVALUED, "true"));
         
         private Map<SolrFieldProperty, String> config;
         

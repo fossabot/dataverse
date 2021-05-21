@@ -3,10 +3,10 @@ package edu.harvard.iq.dataverse.search.schema;
 import java.util.Map;
 
 public class SolrStaticField extends SolrField {
-    
+
     /**
      * Create a static Solr field, requiring a name and a type.
-     * Will use a standard field config of "stored + indexed" ({@link StdConf#SI}).
+     * Will use a standard field config of "stored + indexed" ({@link StdConf#STORED_INDEXED}).
      *
      * @param nameProperty Value for XML property "name" in schema
      * @param type A {@link SolrFieldType}, whose name will be use for the XML schema
@@ -14,9 +14,9 @@ public class SolrStaticField extends SolrField {
      * @see #isValidName(String)
      */
     public SolrStaticField(String nameProperty, SolrFieldType type) {
-        this(nameProperty, type, StdConf.SI.getConfig());
+        this(nameProperty, type, StdConf.STORED_INDEXED.getConfig());
     }
-    
+
     /**
      * Create a static Solr field, requiring a name, a type and a map of more properties, e. g. one from
      * {@link StdConf}

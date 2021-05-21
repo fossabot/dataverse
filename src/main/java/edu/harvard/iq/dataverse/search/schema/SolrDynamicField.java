@@ -10,7 +10,7 @@ public class SolrDynamicField extends SolrField {
     
     /**
      * Create a dynamic Solr field, requiring a name and a type.
-     * Will use a standard field config of "stored + indexed" ({@link StdConf#SI}).
+     * Will use a standard field config of "stored + indexed" ({@link StdConf#STORED_INDEXED}).
      *
      * @param nameProperty Value for XML property "name" in schema
      * @param type A {@link SolrFieldType}, whose name will be use for the XML schema
@@ -18,7 +18,7 @@ public class SolrDynamicField extends SolrField {
      * @see #isValidName(String)
      */
     public SolrDynamicField(String nameProperty, SolrFieldType type) {
-        this(nameProperty, type, StdConf.SI.getConfig());
+        this(nameProperty, type, StdConf.STORED_INDEXED.getConfig());
     }
     
     /**
