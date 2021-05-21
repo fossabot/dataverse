@@ -45,6 +45,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.function.Function;
@@ -785,19 +786,21 @@ public class IndexServiceBean {
 
             for (DatasetField dsf : datasetVersion.getFlatDatasetFields()) {
 
+                // retrieve the solr field. if not retrievable, skip this field (might be email or other non-indexable)
                 DatasetFieldType dsfType = dsf.getDatasetFieldType();
-                String solrFieldSearchable = dsfType.getSolrField().getNameSearchable();
-                // TODO: instead of doing this manually, we should use a <copyField> to copy the text based fields
-                //       into a string field (let the schema management take care of this).
-                String solrFieldFacetable = dsfType.getSolrField().getNameFacetable();
+                Optional<SolrField> optSolrField = dsfType.getSolrField();
+                if (!optSolrField.isPresent())
+                    continue;
+                SolrField solrField = optSolrField.get();
 
-                if (dsf.getValues() != null && !dsf.getValues().isEmpty() && dsf.getValues().get(0) != null && solrFieldSearchable != null) {
-                    logger.fine("indexing " + dsf.getDatasetFieldType().getName() + ":" + dsf.getValues() + " into " + solrFieldSearchable + " and maybe " + solrFieldFacetable);
+                if (dsf.getValues() != null && !dsf.getValues().isEmpty() && dsf.getValues().get(0) != null && solrField.getNameSearchable() != null) {
+                    logger.fine("indexing " + dsf.getDatasetFieldType().getName() + ":" + dsf.getValues() +
+                                " into " + solrField.getNameSearchable() + " and maybe " + solrField.getNameFacetable());
     
                     // EMAIL is not represented here, as we want to keep email address out of Solr per
                     // https://github.com/IQSS/dataverse/issues/759
                     
-                    if (dsfType.getSolrField().getSolrType().equals(SolrFieldType.DATE)) {
+                    if (SolrFieldType.DATE.equals(solrField.getSolrType())) {
                         String dateAsString = "";
                         if (!dsf.getValues_nondisplay().isEmpty()) {
                             dateAsString = dsf.getValues_nondisplay().get(0);
@@ -817,11 +820,11 @@ public class IndexServiceBean {
                                 logger.fine("YYYY only: " + datasetFieldFlaggedAsDate);
                                 // solrInputDocument.addField(solrFieldSearchable,
                                 // Integer.parseInt(datasetFieldFlaggedAsDate));
-                                solrInputDocument.addField(solrFieldSearchable, datasetFieldFlaggedAsDate);
-                                if (dsfType.getSolrField().isFacetable()) {
+                                solrInputDocument.addField(solrField.getNameSearchable(), datasetFieldFlaggedAsDate);
+                                if (solrField.isFacetable()) {
                                     // solrInputDocument.addField(solrFieldFacetable,
                                     // Integer.parseInt(datasetFieldFlaggedAsDate));
-                                    solrInputDocument.addField(solrFieldFacetable, datasetFieldFlaggedAsDate);
+                                    solrInputDocument.addField(solrField.getNameFacetable(), datasetFieldFlaggedAsDate);
                                 }
                             } catch (Exception ex) {
                                 logger.info("unable to convert " + dateAsString + " into YYYY format and couldn't index it (" + dsfType.getName() + ")");
@@ -857,30 +860,30 @@ public class IndexServiceBean {
                                 if (controlledVocabularyValue.getStrValue().equals(DatasetField.NA_VALUE)) {
                                     continue;
                                 }
-                                solrInputDocument.addField(solrFieldSearchable, controlledVocabularyValue.getStrValue());
-                                if (dsfType.getSolrField().isFacetable()) {
-                                    solrInputDocument.addField(solrFieldFacetable, controlledVocabularyValue.getStrValue());
+                                solrInputDocument.addField(solrField.getNameSearchable(), controlledVocabularyValue.getStrValue());
+                                if (solrField.isFacetable()) {
+                                    solrInputDocument.addField(solrField.getNameFacetable(), controlledVocabularyValue.getStrValue());
                                 }
                             }
                         } else if (dsfType.getFieldType().equals(DatasetFieldType.FieldType.TEXTBOX)) {
                             // strip HTML
                             List<String> htmlFreeText = StringUtil.htmlArray2textArray(dsf.getValuesWithoutNaValues());
-                            solrInputDocument.addField(solrFieldSearchable, htmlFreeText);
-                            if (dsfType.getSolrField().isFacetable()) {
-                                solrInputDocument.addField(solrFieldFacetable, htmlFreeText);
+                            solrInputDocument.addField(solrField.getNameSearchable(), htmlFreeText);
+                            if (solrField.isFacetable()) {
+                                solrInputDocument.addField(solrField.getNameFacetable(), htmlFreeText);
                             }
                         } else {
                             // do not strip HTML
-                            solrInputDocument.addField(solrFieldSearchable, dsf.getValuesWithoutNaValues());
-                            if (dsfType.getSolrField().isFacetable()) {
+                            solrInputDocument.addField(solrField.getNameSearchable(), dsf.getValuesWithoutNaValues());
+                            if (solrField.isFacetable()) {
                                 if (dsf.getDatasetFieldType().getName().equals(DatasetFieldConstant.topicClassValue)) {
                                     String topicClassificationTerm = getTopicClassificationTermOrTermAndVocabulary(dsf);
                                     if (topicClassificationTerm != null) {
-                                        logger.fine(solrFieldFacetable + " gets " + topicClassificationTerm);
-                                        solrInputDocument.addField(solrFieldFacetable, topicClassificationTerm);
+                                        logger.fine(solrField.getNameFacetable() + " gets " + topicClassificationTerm);
+                                        solrInputDocument.addField(solrField.getNameFacetable(), topicClassificationTerm);
                                     }
                                 } else {
-                                    solrInputDocument.addField(solrFieldFacetable, dsf.getValuesWithoutNaValues());
+                                    solrInputDocument.addField(solrField.getNameFacetable(), dsf.getValuesWithoutNaValues());
                                 }
                             }
                         }

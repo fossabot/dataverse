@@ -6,15 +6,16 @@
 package edu.harvard.iq.dataverse;
 
 import edu.harvard.iq.dataverse.search.SolrField;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-import javax.faces.model.SelectItem;
+
+import edu.harvard.iq.dataverse.search.schema.SolrFieldType;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import java.util.Optional;
+
 import static org.junit.Assert.*;
 
 /**
@@ -114,17 +115,21 @@ public class DatasetFieldTypeTest {
         
         DatasetFieldType instance = new DatasetFieldType();
         instance.setFieldType(DatasetFieldType.FieldType.DATE);
-        SolrField solrField = instance.getSolrField();       
-        assertEquals(SolrField.SolrType.DATE, solrField.getSolrType());
+        Optional<SolrField> solrField = instance.getSolrField();
+        assertTrue(solrField.isPresent());
+        assertEquals(SolrFieldType.DATE, solrField.get().getSolrType());
         
+        // test non-mapping email type
         instance.setFieldType(DatasetFieldType.FieldType.EMAIL);
-        solrField = instance.getSolrField();       
-        assertEquals(SolrField.SolrType.EMAIL, solrField.getSolrType());
+        solrField = instance.getSolrField();
+        assertTrue(solrField.isEmpty());
+        
         DatasetFieldType parent = new DatasetFieldType();
         parent.setAllowMultiples(true);
         instance.setParentDatasetFieldType(parent);
         solrField = instance.getSolrField();
-        assertEquals(true, solrField.isAllowedToBeMultivalued());
+        assertTrue(solrField.isPresent());
+        assertEquals(true, solrField.get().isAllowedToBeMultivalued());
         
     }
 

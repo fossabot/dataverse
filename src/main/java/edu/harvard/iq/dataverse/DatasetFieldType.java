@@ -4,17 +4,32 @@ import edu.harvard.iq.dataverse.search.SolrField;
 import edu.harvard.iq.dataverse.search.schema.SolrFieldType;
 import edu.harvard.iq.dataverse.util.BundleUtil;
 
-import java.util.Collection;
-
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.MissingResourceException;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.MissingResourceException;
 import javax.faces.model.SelectItem;
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 /**
  * Defines the meaning and constraints of a metadata field and its values.
@@ -537,48 +552,43 @@ public class DatasetFieldType implements Serializable, Comparable<DatasetFieldTy
             return getLocaleTitle();
         }
     }
-
-    public SolrField getSolrField() {
-        SolrField.SolrType solrType = SolrField.SolrType.TEXT_EN;
-        if (fieldType != null) {
-
-            /**
-             * @todo made more decisions based on fieldType: index as dates,
-             * integers, and floats so we can do range queries etc.
-             */
-            if (fieldType.equals(FieldType.DATE)) {
-                solrType = SolrField.SolrType.DATE;
-            } else if (fieldType.equals(FieldType.EMAIL)) {
-                solrType = SolrField.SolrType.EMAIL;
-            }
-
+    
+    /**
+     * Retrieve a Solr type for this field, based on the metadata block type configured for it.
+     * @return A {@link SolrFieldType} or an empty {@link java.util.Optional} if this field has no type (meaning not to be mapped in Solr.)
+     */
+    public Optional<SolrFieldType> getSolrType() {
+        if (this.fieldType != null) {
+            return Optional.ofNullable(fieldType.getSolrType());
+        }
+        return Optional.empty();
+    }
+    
+    /**
+     * Convert the Database Metadata Block field into an indexable Solr field.
+     * Note: Using {@link java.util.Optional} here because some fields might not be indexed (like emails, ...)
+     * @return The converted field (or empty {@link java.util.Optional} if not meant to be indexed)
+     */
+    public Optional<SolrField> getSolrField() {
+        Optional<SolrFieldType> type = getSolrType();
+        
+        if(type.isPresent()) {
+            // http://stackoverflow.com/questions/5800762/what-is-the-use-of-multivalued-field-type-in-solr
+            boolean makeSolrFieldMultivalued = allowMultiples;
+            
+            // If this is a subfield of a compound field, this fields needs to be allowed to have multiple
+            // occurrences inside a Solr document, thus flagging as "multiValued".
             Boolean parentAllowsMultiplesBoolean = false;
             if (isHasParent()) {
                 if (getParentDatasetFieldType() != null) {
                     DatasetFieldType parent = getParentDatasetFieldType();
-                    parentAllowsMultiplesBoolean = parent.isAllowMultiples();
+                    makeSolrFieldMultivalued = makeSolrFieldMultivalued || parent.isAllowMultiples();
                 }
             }
-            
-            boolean makeSolrFieldMultivalued;
-            // http://stackoverflow.com/questions/5800762/what-is-the-use-of-multivalued-field-type-in-solr
-            if (allowMultiples || parentAllowsMultiplesBoolean) {
-                makeSolrFieldMultivalued = true;
-            } else {
-                makeSolrFieldMultivalued = false;
-            }
-
-            return new SolrField(name, solrType, makeSolrFieldMultivalued, facetable);
-
-        } else {
-            /**
-             * @todo: clean this up
-             */
-            String oddValue = name + getTmpNullFieldTypeIdentifier();
-            boolean makeSolrFieldMultivalued = false;
-            SolrField solrField = new SolrField(oddValue, solrType, makeSolrFieldMultivalued, facetable);
-            return solrField;
-        }
+            return Optional.of(new SolrField(this.name, type.get(), makeSolrFieldMultivalued, this.facetable));
+        };
+        
+        return Optional.empty();
     }
 
     public String getLocaleTitle() {

@@ -101,15 +101,17 @@ public class AdvancedSearchPage implements java.io.Serializable {
     private String constructDatasetQuery() {
         List<String> queryStrings = new ArrayList<>();
         for (DatasetFieldType dsfType : metadataFieldList) {
-            if (dsfType.getSearchValue() != null && !dsfType.getSearchValue().equals("")) {
-                queryStrings.add(constructQuery(dsfType.getSolrField().getNameSearchable(), dsfType.getSearchValue()));
-            } else if (dsfType.getListValues() != null && !dsfType.getListValues().isEmpty()) {
-                List<String> listQueryStrings = new ArrayList<>();
-                for (String value : dsfType.getListValues()) {
-                    listQueryStrings.add(dsfType.getSolrField().getNameSearchable() + ":" + "\"" + value + "\"");
+            dsfType.getSolrField().ifPresent(solrField -> {
+                if (dsfType.getSearchValue() != null && !dsfType.getSearchValue().equals("")) {
+                    queryStrings.add(constructQuery(solrField.getNameSearchable(), dsfType.getSearchValue()));
+                } else if (dsfType.getListValues() != null && !dsfType.getListValues().isEmpty()) {
+                    List<String> listQueryStrings = new ArrayList<>();
+                    for (String value : dsfType.getListValues()) {
+                        listQueryStrings.add(solrField.getNameSearchable() + ":" + "\"" + value + "\"");
+                    }
+                    queryStrings.add(constructQuery(listQueryStrings, false));
                 }
-                queryStrings.add(constructQuery(listQueryStrings, false));
-            }
+            });
         }
         if (StringUtils.isNotBlank(dsPublicationDate)) {
             queryStrings.add(constructQuery(SearchFields.DATASET_PUBLICATION_DATE, dsPublicationDate));

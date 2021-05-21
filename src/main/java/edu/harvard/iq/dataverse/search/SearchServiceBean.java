@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.MissingResourceException;
 import java.util.logging.Level;
@@ -182,9 +183,9 @@ public class SearchServiceBean {
         solrFieldsToHightlightOnMap.put(SearchFields.FILE_TAG_SEARCHABLE, "File Tag");
         List<DatasetFieldType> datasetFields = datasetFieldService.findAllOrderedById();
         for (DatasetFieldType datasetFieldType : datasetFields) {
-            String solrField = datasetFieldType.getSolrField().getNameSearchable();
-            String displayName = datasetFieldType.getDisplayName();
-            solrFieldsToHightlightOnMap.put(solrField, displayName);
+            datasetFieldType.getSolrField().ifPresent(solrField -> {
+                solrFieldsToHightlightOnMap.put(solrField.getNameSearchable(), datasetFieldType.getDisplayName());
+            });
         }
         for (Map.Entry<String, String> entry : solrFieldsToHightlightOnMap.entrySet()) {
             String solrField = entry.getKey();
@@ -241,8 +242,10 @@ public class SearchServiceBean {
                 }
                 if (dataverse != null) {
                     for (DataverseFacet dataverseFacet : dataverse.getDataverseFacets()) {
-                        DatasetFieldType datasetField = dataverseFacet.getDatasetFieldType();
-                        solrQuery.addFacetField(datasetField.getSolrField().getNameFacetable());
+                        DatasetFieldType datasetFieldType = dataverseFacet.getDatasetFieldType();
+                        datasetFieldType.getSolrField().ifPresent(solrField -> {
+                            solrQuery.addFacetField(solrField.getNameFacetable());
+                        });
                     }
                 }
             }
@@ -350,7 +353,8 @@ public class SearchServiceBean {
         String titleSolrField = null;
         try {
             DatasetFieldType titleDatasetField = datasetFieldService.findByName(DatasetFieldConstant.title);
-            titleSolrField = titleDatasetField.getSolrField().getNameSearchable();
+            // .get() is a bit dirty, but the whole thing is todo and dirty.
+            titleSolrField = titleDatasetField.getSolrField().get().getNameSearchable();
         } catch (EJBTransactionRolledbackException ex) {
             logger.info("Couldn't find " + DatasetFieldConstant.title);
             if (ex.getCause() instanceof TransactionRolledbackLocalException) {
@@ -600,11 +604,11 @@ public class SearchServiceBean {
              * ===facetField: authorName_ss   metadatablockname : citation
              * ===facetField: dvCategory  metadatablockname : ""
              */
-            for (DatasetFieldType datasetField : datasetFields) {
-                String solrFieldNameForDataset = datasetField.getSolrField().getNameFacetable();
-                if (solrFieldNameForDataset != null && facetField.getName().equals(solrFieldNameForDataset)) {
-                    metadataBlockName = datasetField.getMetadataBlock().getName() ;
-                    datasetFieldName = datasetField.getName();
+            for (DatasetFieldType datasetFieldType : datasetFields) {
+                Optional<SolrField> optSolrField = datasetFieldType.getSolrField();
+                if (optSolrField.isEmpty() || facetField.getName().equals(optSolrField.get().getNameFacetable())) {
+                    metadataBlockName = datasetFieldType.getMetadataBlock().getName() ;
+                    datasetFieldName = datasetFieldType.getName();
                     break;
                 }
             }
@@ -658,7 +662,7 @@ public class SearchServiceBean {
              * we'll build a hashmap
              */
             for (DatasetFieldType datasetField : datasetFields) {
-                String solrFieldNameForDataset = datasetField.getSolrField().getNameFacetable();
+                String solrFieldNameForDataset = datasetField.getSolrField().get().getNameFacetable();
                 String friendlyName = datasetField.getDisplayName();
                 if (solrFieldNameForDataset != null && facetField.getName().endsWith(datasetField.getTmpNullFieldTypeIdentifier())) {
                     // give it the non-friendly name so we remember to update the reference data script for datasets
@@ -670,7 +674,7 @@ public class SearchServiceBean {
                         break;
                     }
                 }
-                datasetfieldFriendlyNamesBySolrField.put(datasetField.getSolrField().getNameFacetable(), friendlyName);
+                datasetfieldFriendlyNamesBySolrField.put(datasetField.getSolrField().get().getNameFacetable(), friendlyName);
             }
             /**
              * @todo get rid of this crazy reflection, per todo above... or

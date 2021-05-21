@@ -430,10 +430,14 @@ public class Index extends AbstractApiBean {
         StringBuilder sb = new StringBuilder();
 
         for (DatasetFieldType datasetField : datasetFieldService.findAllOrderedByName()) {
-            String nameSearchable = datasetField.getSolrField().getNameSearchable();
-            SolrFieldType solrFieldType = datasetField.getSolrField().getSolrType();
+            SolrField solrField = datasetField.getSolrField().orElse(null);
+            if (solrField == null)
+                continue;
+            
+            String nameSearchable = solrField.getNameSearchable();
+            SolrFieldType solrFieldType = solrField.getSolrType();
             String type = solrFieldType.getName();
-            String multivalued = datasetField.getSolrField().isAllowedToBeMultivalued().toString();
+            String multivalued = solrField.isAllowedToBeMultivalued().toString();
             // <field name="datasetId" type="text_general" multiValued="false" stored="true" indexed="true"/>
             sb.append("    <field name=\"" + nameSearchable + "\" type=\"" + type + "\" multiValued=\"" + multivalued + "\" stored=\"true\" indexed=\"true\"/>\n");
         }
@@ -463,8 +467,12 @@ public class Index extends AbstractApiBean {
         sb.append("---\n");
 
         for (DatasetFieldType datasetField : datasetFieldService.findAllOrderedByName()) {
-            String nameSearchable = datasetField.getSolrField().getNameSearchable();
-            String nameFacetable = datasetField.getSolrField().getNameFacetable();
+            SolrField solrField = datasetField.getSolrField().orElse(null);
+            if (solrField == null)
+                continue;
+            
+            String nameSearchable = solrField.getNameSearchable();
+            String nameFacetable = solrField.getNameFacetable();
 
             if (listOfStaticFields.contains(nameSearchable)) {
                 if (nameSearchable.equals(SearchFields.DATASET_DESCRIPTION)) {

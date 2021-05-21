@@ -38,6 +38,7 @@ import org.apache.commons.lang3.StringUtils;
 import static edu.harvard.iq.dataverse.util.json.JsonPrinter.asJsonArray;
 import edu.harvard.iq.dataverse.util.json.NullSafeJsonBuilder;
 
+import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.NoResultException;
@@ -134,8 +135,8 @@ public class DatasetFieldServiceApi extends AbstractApiBean {
             Long id = dsf.getId();
             String title = dsf.getTitle();
             FieldType fieldType = dsf.getFieldType();
-            String solrFieldSearchable = dsf.getSolrField().getNameSearchable();
-            String solrFieldFacetable = dsf.getSolrField().getNameFacetable();
+            String solrFieldSearchable = dsf.getSolrField().orElseThrow().getNameSearchable();
+            String solrFieldFacetable = dsf.getSolrField().orElseThrow().getNameFacetable();
             String metadataBlock = dsf.getMetadataBlock().getName();
             boolean hasParent = dsf.isHasParent();
             boolean allowsMultiples = dsf.isAllowMultiples();
@@ -173,7 +174,7 @@ public class DatasetFieldServiceApi extends AbstractApiBean {
         } catch ( NoResultException nre ) {
             return notFound(name);
             
-        } catch (EJBException | NullPointerException ex) {
+        } catch (EJBException | NullPointerException | NoSuchElementException ex) {
             Throwable cause = ex;
             StringBuilder sb = new StringBuilder();
             sb.append(ex).append(" ");
