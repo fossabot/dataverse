@@ -27,6 +27,7 @@ import edu.harvard.iq.dataverse.datavariable.VariableMetadata;
 import edu.harvard.iq.dataverse.datavariable.VariableMetadataUtil;
 import edu.harvard.iq.dataverse.datavariable.VariableServiceBean;
 import edu.harvard.iq.dataverse.harvest.client.HarvestingClient;
+import edu.harvard.iq.dataverse.search.schema.SolrFieldType;
 import edu.harvard.iq.dataverse.settings.SettingsServiceBean;
 import edu.harvard.iq.dataverse.util.FileUtil;
 import edu.harvard.iq.dataverse.util.StringUtil;
@@ -792,12 +793,11 @@ public class IndexServiceBean {
 
                 if (dsf.getValues() != null && !dsf.getValues().isEmpty() && dsf.getValues().get(0) != null && solrFieldSearchable != null) {
                     logger.fine("indexing " + dsf.getDatasetFieldType().getName() + ":" + dsf.getValues() + " into " + solrFieldSearchable + " and maybe " + solrFieldFacetable);
-                    // if (dsfType.getSolrField().getSolrType().equals(SolrField.SolrType.INTEGER))
-                    // {
-                    if (dsfType.getSolrField().getSolrType().equals(SolrField.SolrType.EMAIL)) {
-                        // no-op. we want to keep email address out of Solr per
-                        // https://github.com/IQSS/dataverse/issues/759
-                    } else if (dsfType.getSolrField().getSolrType().equals(SolrField.SolrType.DATE)) {
+    
+                    // EMAIL is not represented here, as we want to keep email address out of Solr per
+                    // https://github.com/IQSS/dataverse/issues/759
+                    
+                    if (dsfType.getSolrField().getSolrType().equals(SolrFieldType.DATE)) {
                         String dateAsString = "";
                         if (!dsf.getValues_nondisplay().isEmpty()) {
                             dateAsString = dsf.getValues_nondisplay().get(0);

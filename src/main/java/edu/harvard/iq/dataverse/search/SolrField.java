@@ -1,5 +1,7 @@
 package edu.harvard.iq.dataverse.search;
 
+import edu.harvard.iq.dataverse.search.schema.SolrFieldType;
+
 public class SolrField {
     
     /**
@@ -17,7 +19,7 @@ public class SolrField {
      * The Solr data type to be used for this metadata field. {@link edu.harvard.iq.dataverse.DatasetFieldType.FieldType}
      * links the datatype from metadata blocks and the Solr data types together.
      */
-    private SolrType solrType;
+    private SolrFieldType solrFieldType;
     private boolean allowedToBeMultivalued;
     /**
      * This field is *not* meant to depict a facetability aspect of the Solr field inside the Solr schema.
@@ -32,9 +34,9 @@ public class SolrField {
      */
     private boolean facetable;
 
-    public SolrField(String name, SolrType solrType, boolean allowedToBeMultivalued, boolean facetable) {
+    public SolrField(String name, SolrFieldType solrFieldType, boolean allowedToBeMultivalued, boolean facetable) {
         this.nameSearchable = name;
-        this.solrType = solrType;
+        this.solrFieldType = solrFieldType;
         this.allowedToBeMultivalued = allowedToBeMultivalued;
         this.facetable = facetable;
         if (allowedToBeMultivalued) {
@@ -60,8 +62,8 @@ public class SolrField {
         return nameFacetable;
     }
 
-    public SolrType getSolrType() {
-        return solrType;
+    public SolrFieldType getSolrType() {
+        return solrFieldType;
     }
 
     public Boolean isAllowedToBeMultivalued() {
@@ -79,31 +81,6 @@ public class SolrField {
      */
     public boolean isFacetable() {
         return facetable;
-    }
-
-    public enum SolrType {
-
-        /**
-         * @todo: make this configurable from text_en to text_general or
-         * non-English languages? We changed it to text_en to improve English
-         * language searching in https://github.com/IQSS/dataverse/issues/444
-         *
-         * We want to get away from always using "text_en" (especially to
-         * support range queries) in
-         * https://github.com/IQSS/dataverse/issues/370
-         */
-        STRING("string"), TEXT_EN("text_en"), INTEGER("int"), LONG("long"), DATE("text_en"), EMAIL("text_en");
-
-        private String type;
-
-        private SolrType(String string) {
-            type = string;
-        }
-
-        public String getType() {
-            return type;
-        }
-
     }
 
 }

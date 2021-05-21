@@ -17,25 +17,10 @@ import edu.harvard.iq.dataverse.FileMetadata;
 import edu.harvard.iq.dataverse.RoleAssignment;
 import edu.harvard.iq.dataverse.authorization.users.AuthenticatedUser;
 import edu.harvard.iq.dataverse.authorization.users.GuestUser;
-import edu.harvard.iq.dataverse.search.SearchServiceBean;
-import edu.harvard.iq.dataverse.search.SolrField;
-import edu.harvard.iq.dataverse.search.SolrQueryResponse;
-import edu.harvard.iq.dataverse.search.SolrSearchResult;
+import edu.harvard.iq.dataverse.search.*;
 import edu.harvard.iq.dataverse.authorization.users.User;
 import edu.harvard.iq.dataverse.batch.util.LoggingUtil;
-import edu.harvard.iq.dataverse.search.DvObjectSolrDoc;
-import edu.harvard.iq.dataverse.search.FacetCategory;
-import edu.harvard.iq.dataverse.search.FileView;
-import edu.harvard.iq.dataverse.search.IndexBatchServiceBean;
-import edu.harvard.iq.dataverse.search.IndexResponse;
-import edu.harvard.iq.dataverse.search.IndexServiceBean;
-import edu.harvard.iq.dataverse.search.IndexUtil;
-import edu.harvard.iq.dataverse.search.SearchException;
-import edu.harvard.iq.dataverse.search.SearchFields;
-import edu.harvard.iq.dataverse.search.SearchFilesServiceBean;
-import edu.harvard.iq.dataverse.search.SearchUtil;
-import edu.harvard.iq.dataverse.search.SolrIndexServiceBean;
-import edu.harvard.iq.dataverse.search.SortBy;
+import edu.harvard.iq.dataverse.search.schema.SolrFieldType;
 import edu.harvard.iq.dataverse.util.json.NullSafeJsonBuilder;
 import static edu.harvard.iq.dataverse.util.json.NullSafeJsonBuilder.jsonObjectBuilder;
 import java.io.IOException;
@@ -45,8 +30,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
@@ -448,25 +431,8 @@ public class Index extends AbstractApiBean {
 
         for (DatasetFieldType datasetField : datasetFieldService.findAllOrderedByName()) {
             String nameSearchable = datasetField.getSolrField().getNameSearchable();
-            SolrField.SolrType solrType = datasetField.getSolrField().getSolrType();
-            String type = solrType.getType();
-            if (solrType.equals(SolrField.SolrType.EMAIL)) {
-                /**
-                 * @todo should we also remove all "email" field types (e.g.
-                 * datasetContact) from schema.xml? We are explicitly not
-                 * indexing them for
-                 * https://github.com/IQSS/dataverse/issues/759
-                 *
-                 * "The list of potential collaborators should be searchable"
-                 * according to https://github.com/IQSS/dataverse/issues/747 but
-                 * it's not clear yet if this means a Solr or database search.
-                 * For now we'll keep schema.xml as it is to avoid people having
-                 * to update it. If anything, we can remove the email field type
-                 * when we do a big schema.xml update for
-                 * https://github.com/IQSS/dataverse/issues/754
-                 */
-                logger.info("email type detected (" + nameSearchable + ") See also https://github.com/IQSS/dataverse/issues/759");
-            }
+            SolrFieldType solrFieldType = datasetField.getSolrField().getSolrType();
+            String type = solrFieldType.getName();
             String multivalued = datasetField.getSolrField().isAllowedToBeMultivalued().toString();
             // <field name="datasetId" type="text_general" multiValued="false" stored="true" indexed="true"/>
             sb.append("    <field name=\"" + nameSearchable + "\" type=\"" + type + "\" multiValued=\"" + multivalued + "\" stored=\"true\" indexed=\"true\"/>\n");

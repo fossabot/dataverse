@@ -15,11 +15,11 @@ import edu.harvard.iq.dataverse.authorization.users.GuestUser;
 import edu.harvard.iq.dataverse.authorization.users.PrivateUrlUser;
 import edu.harvard.iq.dataverse.authorization.users.User;
 import edu.harvard.iq.dataverse.engine.command.DataverseRequest;
+import edu.harvard.iq.dataverse.search.schema.SolrFieldType;
 import edu.harvard.iq.dataverse.util.BundleUtil;
 import edu.harvard.iq.dataverse.util.SystemConfig;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -403,11 +403,11 @@ public class SearchServiceBean {
                     if (highlightSnippets != null) {
                         matchedFields.add(field);
                         /**
-                         * @todo only SolrField.SolrType.STRING? that's not
+                         * @todo only SolrField.SolrFieldType.STRING? that's not
                          * right... knit the SolrField object more into the
                          * highlighting stuff
                          */
-                        SolrField solrField = new SolrField(field, SolrField.SolrType.STRING, true, true);
+                        SolrField solrField = new SolrField(field, SolrFieldType.STRING, true, true);
                         Highlight highlight = new Highlight(solrField, highlightSnippets, displayName);
                         highlights.add(highlight);
                         highlightsMap.put(solrField, highlight);
