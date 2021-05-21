@@ -117,7 +117,7 @@ public class DatasetFieldTypeTest {
         instance.setFieldType(DatasetFieldType.FieldType.DATE);
         Optional<SolrField> solrField = instance.getSolrField();
         assertTrue(solrField.isPresent());
-        assertEquals(SolrFieldType.DATE, solrField.get().getSolrType());
+        assertEquals(SolrFieldType.TEXT_EN, solrField.get().getSolrType());
         
         // test non-mapping email type
         instance.setFieldType(DatasetFieldType.FieldType.EMAIL);
@@ -127,6 +127,7 @@ public class DatasetFieldTypeTest {
         DatasetFieldType parent = new DatasetFieldType();
         parent.setAllowMultiples(true);
         instance.setParentDatasetFieldType(parent);
+        instance.setFieldType(DatasetFieldType.FieldType.TEXT);
         solrField = instance.getSolrField();
         assertTrue(solrField.isPresent());
         assertEquals(true, solrField.get().isAllowedToBeMultivalued());
