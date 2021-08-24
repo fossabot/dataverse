@@ -138,6 +138,7 @@ public class DatasetFieldServiceApi extends AbstractApiBean {
             String solrFieldSearchable = dsf.getSolrField().orElseThrow().getNameSearchable();
             String solrFieldFacetable = dsf.getSolrField().orElseThrow().getNameFacetable();
             String metadataBlock = dsf.getMetadataBlock().getName();
+            String uri=dsf.getUri();
             boolean hasParent = dsf.isHasParent();
             boolean allowsMultiples = dsf.isAllowMultiples();
             boolean isRequired = dsf.isRequired();
@@ -169,7 +170,8 @@ public class DatasetFieldServiceApi extends AbstractApiBean {
                     .add("parentAllowsMultiples", parentAllowsMultiplesDisplay)
                     .add("solrFieldSearchable", solrFieldSearchable)
                     .add("solrFieldFacetable", solrFieldFacetable)
-                    .add("isRequired", isRequired));
+                    .add("isRequired", isRequired)
+                    .add("uri", uri));
         
         } catch ( NoResultException nre ) {
             return notFound(name);
@@ -357,7 +359,7 @@ public class DatasetFieldServiceApi extends AbstractApiBean {
                                                  int wrongIndex) {
 
         List<String> columns = getColumnsByHeader(header);
-
+        
         String column = columns.get(wrongIndex - 1);
         List<String> arguments = new ArrayList<>();
         arguments.add(header.name());
