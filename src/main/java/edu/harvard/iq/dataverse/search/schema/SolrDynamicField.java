@@ -51,4 +51,24 @@ public class SolrDynamicField extends SolrField {
         if (name == null) return false;
         return validNameMatcher.reset(name).matches();
     }
+    
+    /**
+     * Create a modelled Solr Field from a raw schema response, containing the attributes.
+     *
+     * @param rawMap The attributes map as given by {@ SchemaResponse}
+     * @return An instance of the Solr Field ready for our internal usage.
+     * @throws IllegalArgumentException if any attributes are not known/invalid or the type has not been implemented by us
+     */
+    public static SolrDynamicField build(Map<String,Object> rawMap) throws IllegalArgumentException {
+        Map<SolrFieldProperty, String> properties = SolrField.convertToProperties(rawMap);
+        
+        String name = properties.remove(SolrFieldProperty.NAME);
+        String typeName = properties.remove(SolrFieldProperty.TYPE);
+        SolrFieldType type = SolrFieldType.ALL.stream()
+                                .filter(t -> t.getName().equals(typeName))
+                                .findFirst()
+                                .orElseThrow(() -> new IllegalArgumentException("Given type \""+typeName+"\" from Solr not implemented"));
+        
+        return new SolrDynamicField(name, type, properties);
+    }
 }

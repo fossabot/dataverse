@@ -33,4 +33,24 @@ public class SolrStaticField extends SolrField {
             throw new IllegalArgumentException("Given properties map may not override fields name or type.");
         this.properties.putAll(properties);
     }
+    
+    /**
+     * Create a modelled Solr Field from a raw schema response, containing the attributes.
+     *
+     * @param rawMap The attributes map as given by {@ SchemaResponse}
+     * @return An instance of the Solr Field ready for our internal usage.
+     * @throws IllegalArgumentException if any attributes are not known/invalid or the type has not been implemented by us
+     */
+    public static SolrStaticField build(Map<String,Object> rawMap) throws IllegalArgumentException {
+        Map<SolrFieldProperty, String> properties = SolrField.convertToProperties(rawMap);
+        
+        String name = properties.remove(SolrFieldProperty.NAME);
+        String typeName = properties.remove(SolrFieldProperty.TYPE);
+        SolrFieldType type = SolrFieldType.ALL.stream()
+                                .filter(t -> t.getName().equals(typeName))
+                                .findFirst()
+                                .orElseThrow(() -> new IllegalArgumentException("Given type \""+typeName+"\" from Solr not implemented"));
+        
+        return new SolrStaticField(name, type, properties);
+    }
 }
