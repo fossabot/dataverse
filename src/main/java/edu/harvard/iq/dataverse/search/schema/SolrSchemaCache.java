@@ -4,21 +4,19 @@ import edu.harvard.iq.dataverse.DatasetFieldServiceBean;
 import edu.harvard.iq.dataverse.DatasetFieldType;
 import edu.harvard.iq.dataverse.search.SearchFields;
 
-import javax.annotation.PostConstruct;
-import javax.ejb.ConcurrencyManagement;
-import javax.ejb.ConcurrencyManagementType;
-import javax.ejb.EJB;
-import javax.ejb.Singleton;
-import javax.ejb.Startup;
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.Initialized;
+import javax.enterprise.event.Observes;
+import javax.inject.Inject;
+import javax.inject.Named;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
-@Singleton
-@Startup
-@ConcurrencyManagement(ConcurrencyManagementType.BEAN)
+@Named
+@ApplicationScoped
 public class SolrSchemaCache {
 
     /** The idea:
@@ -30,7 +28,7 @@ public class SolrSchemaCache {
     // Maybe replace with a map used as a set to ensure uniqueness.
     private CopyOnWriteArrayList<SolrCopyField> copyFields;
 
-    @EJB
+    @Inject
     DatasetFieldServiceBean datasetFieldService;
 
     public final SolrStaticField fulltext = new SolrStaticField(SearchFields.FULL_TEXT,
@@ -38,10 +36,19 @@ public class SolrSchemaCache {
                                                                 Map.of(SolrFieldProperty.INDEXED, "true",
                                                                     SolrFieldProperty.STORED, "false",
                                                                     SolrFieldProperty.MULTIVALUED, "true"));
-
-    @PostConstruct
+    
+    /**
+     * Executing during startup (after the application context is ready for us)
+     *
+     * @param init Can be ignored, is not used but necessary for the event catching
+     */
+    public void onStart(@Observes @Initialized(ApplicationScoped.class) Object init) {
+        loadSchema();
+    }
+    
     public void loadSchema() {
-        // get static fields {@link SearchFields}
+        // TODO: get static fields {@link SearchFields}
+        
         // get schema fields (from database)
         List<DatasetFieldType> mdbFields = datasetFieldService.findAllOrderedByName();
         // convert from database model to solr model
