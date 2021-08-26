@@ -48,18 +48,18 @@ public enum SolrFieldProperty {
     DEST("dest", String.class, null),
     MAXCHARS("maxChars", Integer.class, null);
     
-    public final String fieldName;
+    public final String key;
     public final Class type;
     public final Optional<String> defaultValue;
     
-    SolrFieldProperty(String fieldName, Class type, String defaultValue) {
-        this.fieldName = fieldName;
+    SolrFieldProperty(String key, Class type, String defaultValue) {
+        this.key = key;
         this.type = type;
         this.defaultValue = Optional.ofNullable(defaultValue);
     }
     
-    public String getName() {
-        return fieldName;
+    public String getKey() {
+        return key;
     }
     public Class getType() {
         return type;
