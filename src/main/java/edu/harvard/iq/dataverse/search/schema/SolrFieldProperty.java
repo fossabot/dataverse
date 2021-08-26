@@ -16,6 +16,7 @@ public enum SolrFieldProperty {
     
     /* The properties below are used for <fieldType>, <dynamicField> and <field> only */
     
+    PRECISIONSTEP("precisionStep", Long.class, null),
     POSITIONINCREMENTGAP("positionIncrementGap", String.class, null),
     AUTOGENERATEPHRASEQUERIES("autoGeneratePhraseQueries", Boolean.class, null),
     SYNONYMQUERYSTYLE("synonymQueryStyle", String.class, null),
