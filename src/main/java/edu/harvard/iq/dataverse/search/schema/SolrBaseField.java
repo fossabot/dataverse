@@ -110,4 +110,10 @@ public class SolrBaseField {
         }
         return map;
     }
+    
+    @Override
+    public String toString() {
+        // using class lookup will use inherited class's name, not base class's
+        return this.getClass().getSimpleName() + "{properties=" + properties + "}";
+    }
 }
