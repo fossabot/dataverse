@@ -30,6 +30,14 @@ public class SolrSchemaCache {
 
     @Inject
     DatasetFieldServiceBean datasetFieldService;
+    
+    public static final List<String> IGNORED_DYNAMIC_FIELDS =
+        List.of("*_p", "*_srpt", "*_dpf", "*_dpi", "*_dps", "attr_*", "*_ws", "*_txt_en", "*_txt_en_split",
+            "*_txt_en_split_tight", "*_txt_rev", "*_phon_en", "*_s_lower", "*_descendent_path", "*_ancestor_path",
+            "*_point", "*_txt_ar", "*_txt_bg", "*_txt_ca", "*_txt_cjk", "*_txt_cz", "*_txt_da", "*_txt_de", "*_txt_el",
+            "*_txt_es", "*_txt_eu", "*_txt_fa", "*_txt_fi", "*_txt_fr", "*_txt_ga", "*_txt_gl", "*_txt_hi", "*_txt_hu",
+            "*_txt_hy", "*_txt_id", "*_txt_it", "*_txt_ja", "*_txt_lv", "*_txt_nl", "*_txt_no", "*_txt_pt", "*_txt_ro",
+            "*_txt_ru", "*_txt_sv", "*_txt_th", "*_txt_tr");
 
     public static final SolrStaticField FULLTEXT = new SolrStaticField(SearchFields.FULL_TEXT,
                                                                        SolrFieldType.TEXT_GENERAL,
