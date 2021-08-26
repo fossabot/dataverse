@@ -14,8 +14,8 @@ import java.util.Objects;
  */
 public class SolrCopyField {
     
-    private SolrField sourceField;
-    private SolrField destinationField;
+    private SolrBaseField sourceField;
+    private SolrBaseField destinationField;
     private Integer maxChars;
     
     /**
@@ -36,7 +36,7 @@ public class SolrCopyField {
      *             wildcard matches and multivalued (see comment above).
      * @throws IllegalArgumentException If source or dest are null or instances of {@link SolrFieldType}.
      */
-    public SolrCopyField(SolrField source, SolrField dest) {
+    public SolrCopyField(SolrBaseField source, SolrBaseField dest) {
         if ( source == null || dest == null )
             throw new IllegalArgumentException("Given fields source and dest may not be null.");
         if ( source instanceof SolrFieldType || dest instanceof SolrFieldType)
@@ -54,11 +54,11 @@ public class SolrCopyField {
      * @param dest The "destination" field, where the data will be stored. Make sure to follow the rules regarding
      *             wildcard matches and multivalued (see comment above).
      * @param maxChars The copy limit in chars.
-     *                 The opinionated constructor {@link #SolrCopyField(SolrField, SolrField)} uses a limit of 3000
+     *                 The opinionated constructor {@link #SolrCopyField(SolrBaseField, SolrBaseField)} uses a limit of 3000
      *                 chars.Be extra careful here. You have been warned.
      * @throws IllegalArgumentException If any parameter is null, maxChars < 1 or the src/dst fields are of wrong type.
      */
-    public SolrCopyField(SolrField source, SolrField dest, Integer maxChars) {
+    public SolrCopyField(SolrBaseField source, SolrBaseField dest, Integer maxChars) {
         this(source, dest);
         if (maxChars != null && maxChars.intValue() > 0)
             this.maxChars = maxChars;

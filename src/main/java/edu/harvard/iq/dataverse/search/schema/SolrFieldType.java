@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
  *       Down the road, it might be interesting to define and configure some <fieldType> completely
  *       via Managed Schema API.
  */
-public final class SolrFieldType extends SolrField {
+public final class SolrFieldType extends SolrBaseField {
     /**
     * @todo: Make this configurable from text_en to text_general or
     *        non-English languages? We changed it to text_en to improve English

@@ -6,7 +6,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class SolrFieldTest {
+class SolrBaseFieldTest {
     
     @Test
     public void convertToPropertiesMap_valid() {
@@ -19,7 +19,7 @@ class SolrFieldTest {
             SolrFieldProperty.STORED, "true");
         
         // when && then
-        assertEquals(expected, SolrField.convertToProperties(subject));
+        assertEquals(expected, SolrBaseField.convertToProperties(subject));
     }
     
     @Test
@@ -30,7 +30,7 @@ class SolrFieldTest {
             "GARBAGE", "true");
         
         // when && then
-        assertThrows(IllegalArgumentException.class, () -> SolrField.convertToProperties(subject));
+        assertThrows(IllegalArgumentException.class, () -> SolrBaseField.convertToProperties(subject));
     }
     
 }

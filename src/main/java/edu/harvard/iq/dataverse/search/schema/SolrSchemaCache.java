@@ -73,8 +73,8 @@ public class SolrSchemaCache {
                 dft.getName(),
                 dft.getFieldType().getSolrType(),
                 dft.isAllowMultiples()
-                    ? SolrField.StdConf.STORED_INDEXED_MULTIVALUED.getConfig()
-                    : SolrField.StdConf.STORED_INDEXED.getConfig()
+                    ? SolrBaseField.StdConf.STORED_INDEXED_MULTIVALUED.getConfig()
+                    : SolrBaseField.StdConf.STORED_INDEXED.getConfig()
             );
         else
             throw new RuntimeException(String.format("Solr Type '%s' not supported yet.", type.getName()));

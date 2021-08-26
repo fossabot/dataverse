@@ -4,7 +4,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class SolrDynamicField extends SolrField {
+public class SolrDynamicField extends SolrBaseField {
     
     protected static final Matcher validNameMatcher = Pattern.compile("^\\*_[\\w]+$").matcher("");
     
@@ -60,7 +60,7 @@ public class SolrDynamicField extends SolrField {
      * @throws IllegalArgumentException if any attributes are not known/invalid or the type has not been implemented by us
      */
     public static SolrDynamicField build(Map<String,Object> rawMap) throws IllegalArgumentException {
-        Map<SolrFieldProperty, String> properties = SolrField.convertToProperties(rawMap);
+        Map<SolrFieldProperty, String> properties = SolrBaseField.convertToProperties(rawMap);
         
         String name = properties.remove(SolrFieldProperty.NAME);
         String typeName = properties.remove(SolrFieldProperty.TYPE);

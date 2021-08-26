@@ -2,7 +2,7 @@ package edu.harvard.iq.dataverse.search.schema;
 
 import java.util.Map;
 
-public class SolrStaticField extends SolrField {
+public class SolrStaticField extends SolrBaseField {
 
     /**
      * Create a static Solr field, requiring a name and a type.
@@ -42,7 +42,7 @@ public class SolrStaticField extends SolrField {
      * @throws IllegalArgumentException if any attributes are not known/invalid or the type has not been implemented by us
      */
     public static SolrStaticField build(Map<String,Object> rawMap) throws IllegalArgumentException {
-        Map<SolrFieldProperty, String> properties = SolrField.convertToProperties(rawMap);
+        Map<SolrFieldProperty, String> properties = SolrBaseField.convertToProperties(rawMap);
         
         String name = properties.remove(SolrFieldProperty.NAME);
         String typeName = properties.remove(SolrFieldProperty.TYPE);
