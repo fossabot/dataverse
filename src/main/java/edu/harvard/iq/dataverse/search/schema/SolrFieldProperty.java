@@ -1,6 +1,9 @@
 package edu.harvard.iq.dataverse.search.schema;
 
+import java.util.Arrays;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public enum SolrFieldProperty {
     // Used for <fieldType>, <dynamicField> and <field> only
@@ -51,11 +54,22 @@ public enum SolrFieldProperty {
     public final String key;
     public final Class type;
     public final Optional<String> defaultValue;
+    private static final Map<String, SolrFieldProperty> members;
+    static {
+        members = Arrays.stream(SolrFieldProperty.values()).collect(Collectors.toUnmodifiableMap(sfp -> sfp.getKey(), sfp -> sfp));
+    }
     
     SolrFieldProperty(String key, Class type, String defaultValue) {
         this.key = key;
         this.type = type;
         this.defaultValue = Optional.ofNullable(defaultValue);
+    }
+    
+    public static SolrFieldProperty of(String name) {
+        if (name == null) {
+            return null;
+        }
+        return members.get(name);
     }
     
     public String getKey() {
