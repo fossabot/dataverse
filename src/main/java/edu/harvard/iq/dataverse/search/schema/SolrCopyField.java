@@ -83,4 +83,13 @@ public class SolrCopyField {
     public int hashCode() {
         return Objects.hash(sourceField, destinationField);
     }
+    
+    @Override
+    public String toString() {
+        return "SolrCopyField{" +
+            "sourceField=" + sourceField +
+            ", destinationField=" + destinationField +
+            ", maxChars=" + maxChars +
+            '}';
+    }
 }
