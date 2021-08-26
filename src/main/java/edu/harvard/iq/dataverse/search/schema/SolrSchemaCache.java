@@ -31,11 +31,11 @@ public class SolrSchemaCache {
     @Inject
     DatasetFieldServiceBean datasetFieldService;
 
-    public final SolrStaticField fulltext = new SolrStaticField(SearchFields.FULL_TEXT,
-                                                                SolrFieldType.TEXT_GENERAL,
-                                                                Map.of(SolrFieldProperty.INDEXED, "true",
-                                                                    SolrFieldProperty.STORED, "false",
-                                                                    SolrFieldProperty.MULTIVALUED, "true"));
+    public static final SolrStaticField FULLTEXT = new SolrStaticField(SearchFields.FULL_TEXT,
+                                                                       SolrFieldType.TEXT_GENERAL,
+                                                                       Map.of(SolrFieldProperty.INDEXED, "true",
+                                                                              SolrFieldProperty.STORED, "false",
+                                                                              SolrFieldProperty.MULTIVALUED, "true"));
     
     /**
      * Executing during startup (after the application context is ready for us)
@@ -81,6 +81,6 @@ public class SolrSchemaCache {
     }
 
     SolrCopyField buildFullTextCopyField(SolrStaticField source) {
-        return new SolrCopyField(source, fulltext);
+        return new SolrCopyField(source, FULLTEXT);
     }
 }
