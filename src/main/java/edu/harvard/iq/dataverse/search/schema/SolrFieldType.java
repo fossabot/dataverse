@@ -24,13 +24,40 @@ public final class SolrFieldType extends SolrField {
     *        We want to get away from always using "text_en" (especially to
     *        support range queries) in https://github.com/IQSS/dataverse/issues/370
     */
-    public static final SolrFieldType STRING = new SolrFieldType("string", "solr.StrField", Map.of(SolrFieldProperty.DOCVALUES, "true"));
+    public static final SolrFieldType STRING = new SolrFieldType("string", "solr.StrField", Map.of(SolrFieldProperty.DOCVALUES, "true", SolrFieldProperty.SORTMISSINGLAST, "true"));
+    public static final SolrFieldType STRINGS = new SolrFieldType("strings", "solr.StrField", Map.of(SolrFieldProperty.DOCVALUES, "true", SolrFieldProperty.MULTIVALUED, "true", SolrFieldProperty.SORTMISSINGLAST, "true"));
+    
     public static final SolrFieldType INTEGER = new SolrFieldType("pint", "solr.IntPointField", Map.of(SolrFieldProperty.DOCVALUES, "true"));
+    public static final SolrFieldType INTEGERS = new SolrFieldType("pints", "solr.IntPointField", Map.of(SolrFieldProperty.DOCVALUES, "true", SolrFieldProperty.MULTIVALUED, "true"));
     public static final SolrFieldType LONG = new SolrFieldType("plong", "solr.LongPointField", Map.of(SolrFieldProperty.DOCVALUES, "true"));
+    public static final SolrFieldType LONGS = new SolrFieldType("plongs", "solr.LongPointField", Map.of(SolrFieldProperty.DOCVALUES, "true", SolrFieldProperty.MULTIVALUED, "true"));
     public static final SolrFieldType FLOAT = new SolrFieldType("pfloat", "solr.FloatPointField", Map.of(SolrFieldProperty.DOCVALUES, "true"));
+    public static final SolrFieldType FLOATS = new SolrFieldType("pfloats", "solr.FloatPointField", Map.of(SolrFieldProperty.DOCVALUES, "true", SolrFieldProperty.MULTIVALUED, "true"));
     public static final SolrFieldType DOUBLE = new SolrFieldType("pdouble", "solr.DoublePointField", Map.of(SolrFieldProperty.DOCVALUES, "true"));
+    public static final SolrFieldType DOUBLES = new SolrFieldType("pdoubles", "solr.DoublePointField", Map.of(SolrFieldProperty.DOCVALUES, "true", SolrFieldProperty.MULTIVALUED, "true"));
+    
     public static final SolrFieldType DATE = new SolrFieldType("pdate", "solr.DatePointField", Map.of(SolrFieldProperty.DOCVALUES, "true"));
-    public static final SolrFieldType BOOLEAN = new SolrFieldType("boolean", "solr.BoolField");
+    public static final SolrFieldType DATES = new SolrFieldType("pdates", "solr.DatePointField", Map.of(SolrFieldProperty.DOCVALUES, "true", SolrFieldProperty.MULTIVALUED, "true"));
+    
+    public static final SolrFieldType BOOLEAN = new SolrFieldType("boolean", "solr.BoolField",  Map.of(SolrFieldProperty.SORTMISSINGLAST, "true"));
+    public static final SolrFieldType BOOLEANS = new SolrFieldType("booleans", "solr.BoolField",  Map.of(SolrFieldProperty.SORTMISSINGLAST, "true", SolrFieldProperty.MULTIVALUED, "true"));
+    
+    /**
+     * This field type should not be used anymore in newer Solr versions.
+     */
+    @Deprecated
+    public static final SolrFieldType TRIE_INTEGER = new SolrFieldType("int", "solr.TrieIntField", Map.of(SolrFieldProperty.PRECISIONSTEP, "0", SolrFieldProperty.POSITIONINCREMENTGAP, "0"));
+    /**
+     * This field type should not be used anymore in newer Solr versions.
+     */
+    @Deprecated
+    public static final SolrFieldType TRIE_LONG = new SolrFieldType("long", "solr.TrieLongField", Map.of(SolrFieldProperty.PRECISIONSTEP, "0", SolrFieldProperty.POSITIONINCREMENTGAP, "0"));
+    /**
+     * This field type should not be used anymore in newer Solr versions.
+     */
+    @Deprecated
+    public static final SolrFieldType TRIE_DATE = new SolrFieldType("date", "solr.TrieDateField", Map.of(SolrFieldProperty.PRECISIONSTEP, "0", SolrFieldProperty.POSITIONINCREMENTGAP, "0"));
+    
         
     // TODO: Especially textfields do have more than this (analysers, tokenizers, ...).
     //       We do not yet depict these in this class and it might be better suited for a class on its own.
