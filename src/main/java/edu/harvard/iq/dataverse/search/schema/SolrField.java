@@ -30,7 +30,7 @@ public class SolrField {
         }
     }
     
-    protected static final Matcher validNameMatcher = Pattern.compile("^[A-Za-z_][\\w]+$").matcher("");
+    protected static final Matcher validNameMatcher = Pattern.compile("^[A-Za-z_][\\w\\.]+$").matcher("");
     protected final Map<SolrFieldProperty, String> properties = new EnumMap<>(SolrFieldProperty.class);
     
     /**
@@ -92,5 +92,22 @@ public class SolrField {
     @Override
     public int hashCode() {
         return Objects.hash(properties);
+    }
+    
+    /**
+     * Convert Solr field attributes from a {@link Map<String,Object>} to {@link Map<SolrFieldProperty,String>}.
+     *
+     * @throws IllegalArgumentException when a property key is found that is not known or invalid.
+     */
+    public static Map<SolrFieldProperty,String> convertToProperties(Map<String, Object> rawMap) throws IllegalArgumentException {
+        Map<SolrFieldProperty,String> map = new EnumMap<>(SolrFieldProperty.class);
+        for (String key : rawMap.keySet()) {
+            SolrFieldProperty property = SolrFieldProperty.of(key);
+            if (property == null) {
+                throw new IllegalArgumentException("Invalid/Unknown schema property \""+key+"\"");
+            }
+            map.put(property, rawMap.get(key).toString());
+        }
+        return map;
     }
 }
