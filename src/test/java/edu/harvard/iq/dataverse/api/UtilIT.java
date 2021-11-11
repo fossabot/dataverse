@@ -17,8 +17,8 @@ import java.nio.file.Paths;
 import java.util.logging.Level;
 import edu.harvard.iq.dataverse.api.datadeposit.SwordConfigurationImpl;
 import com.jayway.restassured.path.xml.XmlPath;
+import edu.harvard.iq.dataverse.api.util.Tags;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Test;
 import edu.harvard.iq.dataverse.settings.SettingsServiceBean;
 import com.jayway.restassured.specification.RequestSpecification;
 import java.util.List;
@@ -38,17 +38,21 @@ import org.hamcrest.Matcher;
 import static com.jayway.restassured.path.xml.XmlPath.from;
 import static com.jayway.restassured.RestAssured.given;
 import edu.harvard.iq.dataverse.DatasetField;
-import edu.harvard.iq.dataverse.DatasetFieldConstant;
 import edu.harvard.iq.dataverse.DatasetFieldType;
 import edu.harvard.iq.dataverse.DatasetFieldValue;
 import edu.harvard.iq.dataverse.util.StringUtil;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 import java.io.StringReader;
 import java.util.Collections;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-public class UtilIT {
+@Tag(Tags.STD_API_SET)
+@Tag(Tags.EXT_API_SET)
+public class UtilIT extends TestContainersBase {
 
     private static final Logger logger = Logger.getLogger(UtilIT.class.getCanonicalName());
 
@@ -60,6 +64,8 @@ public class UtilIT {
     private static final String EMPTY_STRING = "";
     public static final int MAXIMUM_INGEST_LOCK_DURATION = 15;
     public static final int MAXIMUM_PUBLISH_LOCK_DURATION = 15;
+    
+    private static final String defaultAppUrl = "http://localhost:8080";
     
     private static SwordConfigurationImpl swordConfiguration = new SwordConfigurationImpl();
     
@@ -81,14 +87,13 @@ public class UtilIT {
     }
     
     static String getRestAssuredBaseUri() {
-        String saneDefaultInDev = "http://localhost:8080";
-        String restAssuredBaseUri = saneDefaultInDev;
-        String specifiedUri = System.getProperty("dataverse.test.baseurl");
-        if (specifiedUri != null) {
-            restAssuredBaseUri = specifiedUri;
-        }
-        logger.info("Base URL for tests: " + restAssuredBaseUri);
-        return restAssuredBaseUri;
+        // Get URL from Testcontainers or get default
+        String url = TestContainersBase.getAppUrl().orElse(defaultAppUrl);
+        // Override from system property if present
+        url = System.getProperty("dataverse.test.baseurl", url);
+        
+        logger.info("Base URL for tests: " + url);
+        return url;
     }
 
     /**
@@ -2266,7 +2271,7 @@ public class UtilIT {
             .post("api/users/token/recreate");
         return response;
     }
-
+    
     @Test
     public void testGetFileIdFromSwordStatementWithNoFiles() {
         String swordStatementWithNoFiles = "<feed xmlns=\"http://www.w3.org/2005/Atom\">\n"
