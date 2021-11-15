@@ -1,8 +1,6 @@
 package edu.harvard.iq.dataverse.api;
 
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.Container;
 import org.testcontainers.containers.GenericContainer;
@@ -16,8 +14,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
-import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Logger;
@@ -53,25 +51,25 @@ public abstract class TestContainersBase {
     private static PostgreSQLContainer<?> pgsql;
     private static SolrContainer solr;
     private static GenericContainer<?> appserver;
-    private static boolean isBootstrapped = false;
     
     public static boolean isEnabled() {
         return testContainersEnabled;
     }
     
     /**
-     * Starting phase of custom container lifecycle to enable reusing containers for multiple tests.
-     *
-     * For Maven based tests, TC testing may be enabled via a system property 'tc.enabled'.
-     * For programmatic enabling, see {@link #setup(boolean)}.
+     * Implementing the singleton pattern from Testcontainers
+     * @see <a href="https://www.testcontainers.org/test_framework_integration/manual_lifecycle_control/#singleton-containers">TC Manual</a>
      */
-    @BeforeAll
-    public static void setup() {
+    static {
         setup(false);
     }
     
     /**
      * Starting phase of custom container lifecycle to enable reusing containers for multiple tests.
+     *
+     * For Maven based tests, TC testing may be enabled via a system property 'tc.enabled'. For programmatic
+     * access, supply a parameter.
+     *
      * @param enableTestContainers enforce Testcontainers usage
      */
     public static void setup(boolean enableTestContainers) {
@@ -85,25 +83,7 @@ public abstract class TestContainersBase {
                 bootstrapAppserver();
             } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
-                teardown();
             }
-        }
-    }
-    
-    /**
-     * Stopping phase of custom container lifecycle to enable reusing containers for multiple tests.
-     * Will stop any containers that have been created before.
-     */
-    @AfterAll
-    public static void teardown() {
-        if (pgsql != null) {
-            pgsql.stop();
-        }
-        if (solr != null) {
-            solr.stop();
-        }
-        if (appserver != null) {
-            appserver.stop();
         }
     }
     
@@ -125,9 +105,6 @@ public abstract class TestContainersBase {
             pgsql = new PostgreSQLContainer(DockerImageName.parse("postgres:" + pgsqlVersion));
             pgsql.withNetwork(network).withNetworkAliases(pgsqlNetworkAlias);
     
-            // Set options
-            pgsql.withReuse(true); // Do not delete after each test
-    
             // Start the container
             pgsql.start();
         }
@@ -141,8 +118,7 @@ public abstract class TestContainersBase {
             solr = new SolrContainer(DockerImageName.parse(solrImage).asCompatibleSubstituteFor("solr"))
                 .withNetwork(network)
                 .withNetworkAliases(solrNetworkAlias)
-                .withZookeeper(false) // Use Standalone, not SolrCloud mode!
-                .withReuse(true); // Do not delete after each test
+                .withZookeeper(false); // Use Standalone, not SolrCloud mode!
             
             // Start the container
             solr.start();
@@ -185,6 +161,9 @@ public abstract class TestContainersBase {
             
             // Create Dataverse container
             appserver = new GenericContainer<>(DockerImageName.parse(appImage))
+                // make dependent on Postgres and Solr
+                .dependsOn(List.of(pgsql, solr))
+                
                 // expose to host on random port targeting port 8080 in container
                 .withExposedPorts(8080)
                 
@@ -210,9 +189,7 @@ public abstract class TestContainersBase {
                 //.withFileSystemBind(appDirData, appMountData, BindMode.READ_WRITE)
                 
                 // send in the collected environment variables
-                .withEnv(env)
-                // enable reuse after each test
-                .withReuse(true);
+                .withEnv(env);
             
             // Start the container
             appserver.start();
@@ -220,19 +197,15 @@ public abstract class TestContainersBase {
     }
     
     private static void bootstrapAppserver() throws IOException, InterruptedException {
-        if ( !isBootstrapped ) {
-            // Assert we're up and running
-            Assertions.assertNotNull(pgsql, "Postgres not initialized?");
-            Assertions.assertNotNull(solr, "Solr not initialized?");
-            Assertions.assertNotNull(appserver, "Appserver not initialized?");
-            Assertions.assertTrue(pgsql.isRunning(), "Postgres not running?");
-            Assertions.assertTrue(solr.isRunning(), "Solr not running?");
-            Assertions.assertTrue(appserver.isRunning(), "Appserver not running?");
-    
-            // Execute bootstrapping
-            appserver.execInContainer("/opt/payara/scripts/bootstrap-job.sh");
-            
-            isBootstrapped = true;
-        }
+        // Assert we're up and running
+        Assertions.assertNotNull(pgsql, "Postgres not initialized?");
+        Assertions.assertNotNull(solr, "Solr not initialized?");
+        Assertions.assertNotNull(appserver, "Appserver not initialized?");
+        Assertions.assertTrue(pgsql.isRunning(), "Postgres not running?");
+        Assertions.assertTrue(solr.isRunning(), "Solr not running?");
+        Assertions.assertTrue(appserver.isRunning(), "Appserver not running?");
+
+        // Execute bootstrapping
+        appserver.execInContainer("/opt/payara/scripts/bootstrap-job.sh");
     }
 }
