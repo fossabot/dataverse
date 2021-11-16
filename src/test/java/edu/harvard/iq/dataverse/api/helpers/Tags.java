@@ -1,4 +1,4 @@
-package edu.harvard.iq.dataverse.api.util;
+package edu.harvard.iq.dataverse.api.helpers;
 
 public class Tags {
     public static final String SLOW = "slow";

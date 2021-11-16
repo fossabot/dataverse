@@ -17,7 +17,7 @@ import java.nio.file.Paths;
 import java.util.logging.Level;
 import edu.harvard.iq.dataverse.api.datadeposit.SwordConfigurationImpl;
 import com.jayway.restassured.path.xml.XmlPath;
-import edu.harvard.iq.dataverse.api.util.Tags;
+import edu.harvard.iq.dataverse.api.helpers.Tags;
 import org.apache.commons.lang3.StringUtils;
 import edu.harvard.iq.dataverse.settings.SettingsServiceBean;
 import com.jayway.restassured.specification.RequestSpecification;

@@ -5,7 +5,7 @@ import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.path.json.JsonPath.with;
 import com.jayway.restassured.response.Response;
 import edu.harvard.iq.dataverse.Dataverse;
-import edu.harvard.iq.dataverse.api.util.Tags;
+import edu.harvard.iq.dataverse.api.helpers.Tags;
 import edu.harvard.iq.dataverse.settings.SettingsServiceBean;
 import edu.harvard.iq.dataverse.util.BundleUtil;
 import java.io.FileNotFoundException;
@@ -22,7 +22,6 @@ import javax.ws.rs.core.Response.Status;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.OK;
 
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
