@@ -32,13 +32,6 @@ File Previewers are tools that display the content of files - including audio, h
 
 https://github.com/GlobalDataverseCommunityConsortium/dataverse-previewers
 
-TwoRavens
-~~~~~~~~~
-
-TwoRavens is a system of interlocking statistical tools for data exploration, analysis, and meta-analysis.
-
-https://github.com/IQSS/TwoRavens
-
 Python
 ------
 
@@ -93,6 +86,13 @@ repo2docker is a command line tool that allows you to create and start a
 Docker image from a code repository that follows the [reproducible executable environment specification](https://repo2docker.readthedocs.io/en/latest/specification.html). repo2docker supports Dataverse installation DOIs to find and retrieve datasets.
 
 https://github.com/jupyter/repo2docker/blob/master/repo2docker/contentproviders/dataverse.py
+
+dataverse-migration-scripts
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This series of Python scripts offers a starting point for migrating datasets from one Dataverse installation to another. Multiple parts of the process are handled in these scripts, including adding users, collections, and multiple versions of datasets. These scripts were developed to migrate data from version 4.20 to 5.1, but may provide a helpful starting point for other software versions. The :doc:`migration APIs </developers/dataset-migration-api>` added in version 5.6 are not used. You can find more details in the repository, as well as `this Google group thread <https://groups.google.com/g/dataverse-community/c/4yy3U5RtUAs/m/OLogk12NBgAJ>`_.
+
+https://github.com/scholarsportal/dataverse-migration-scripts
 
 Java
 ----

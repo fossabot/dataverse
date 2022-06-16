@@ -436,7 +436,18 @@ public class UtilIT {
         return createDatasetViaSwordApiFromXML(dataverseToCreateDatasetIn, xmlIn, apiToken);
     }
 
-    private static Response createDatasetViaSwordApiFromXML(String dataverseToCreateDatasetIn, String xmlIn, String apiToken) {
+    static Response createDatasetViaSwordApi(String dataverseToCreateDatasetIn, String title, String description, String license, String apiToken) {
+        String nullRights = null;
+        String xmlIn = getDatasetXml(title, "Lastname, Firstname", description, license, nullRights);
+        return createDatasetViaSwordApiFromXML(dataverseToCreateDatasetIn, xmlIn, apiToken);
+    }
+
+    static Response createDatasetViaSwordApi(String dataverseToCreateDatasetIn, String title, String description, String license, String rights, String apiToken) {
+        String xmlIn = getDatasetXml(title, "Lastname, Firstname", description, license, rights);
+        return createDatasetViaSwordApiFromXML(dataverseToCreateDatasetIn, xmlIn, apiToken);
+    }
+
+    public static Response createDatasetViaSwordApiFromXML(String dataverseToCreateDatasetIn, String xmlIn, String apiToken) {
         Response createDatasetResponse = given()
                 .auth().basic(apiToken, EMPTY_STRING)
                 .body(xmlIn)
@@ -534,11 +545,27 @@ public class UtilIT {
     }
 
     static private String getDatasetXml(String title, String author, String description) {
+        String nullLicense = null;
+        String nullRights = null;
+        return getDatasetXml(title, author, description, nullLicense, nullRights);
+    }
+
+    static private String getDatasetXml(String title, String author, String description, String license, String rights) {
+        String optionalLicense = "";
+        if (license != null) {
+            optionalLicense = "   <dcterms:license>" + license + "</dcterms:license>\n";
+        }
+        String optionalRights = "";
+        if (rights != null) {
+            optionalRights = "   <dcterms:rights>" + rights + "</dcterms:rights>\n";
+        }
         String xmlIn = "<?xml version=\"1.0\"?>\n"
                 + "<entry xmlns=\"http://www.w3.org/2005/Atom\" xmlns:dcterms=\"http://purl.org/dc/terms/\">\n"
                 + "   <dcterms:title>" + title + "</dcterms:title>\n"
                 + "   <dcterms:creator>" + author + "</dcterms:creator>\n"
                 + "   <dcterms:description>" + description + "</dcterms:description>\n"
+                + optionalLicense
+                + optionalRights
                 + "</entry>\n"
                 + "";
         return xmlIn;
@@ -1265,6 +1292,15 @@ public class UtilIT {
                     .header(UtilIT.API_TOKEN_HTTP_HEADER, apiToken);
         }
         return requestSpecification.get("/api/notifications/all");
+    }
+
+    static Response deleteNotification(long id, String apiToken) {
+        RequestSpecification requestSpecification = given();
+        if (apiToken != null) {
+            requestSpecification = given()
+                    .header(UtilIT.API_TOKEN_HTTP_HEADER, apiToken);
+        }
+        return requestSpecification.delete("/api/notifications/" + id);
     }
 
     static Response nativeGetUsingPersistentId(String persistentId, String apiToken) {
@@ -2777,6 +2813,7 @@ public class UtilIT {
     static Response setLicenseActiveById(Long id, boolean state, String apiToken) {
         Response activateLicenseResponse = given()
                 .header(API_TOKEN_HTTP_HEADER, apiToken)
+                .urlEncodingEnabled(false)
                 .put("/api/licenses/"+id.toString() + "/:active/" + state);
         return activateLicenseResponse;
     }
@@ -2838,5 +2875,35 @@ public class UtilIT {
                 Collections.singletonList(
                         new DatasetFieldValue(field, value)));
         return field;
+    }
+
+
+    static Response importDatasetDDIViaNativeApi(String apiToken, String dataverseAlias, String xml, String pid, String release) {
+
+        String postString = "/api/dataverses/" + dataverseAlias + "/datasets/:importddi";
+        if (pid != null || release != null  ) {
+            //postString = postString + "?";
+            if (pid != null) {
+                postString = postString + "?pid=" + pid;
+                if (release != null && release.compareTo("yes") == 0) {
+                    postString = postString + "&release=" + release.toString();
+                }
+            } else {
+                if (release != null && release.compareTo("yes") == 0) {
+                    postString = postString + "?release=" + release.toString();
+                }
+            }
+        }
+        logger.info("Here importDatasetDDIViaNativeApi");
+        logger.info(postString);
+
+        RequestSpecification importDDI = given()
+                .header(API_TOKEN_HTTP_HEADER, apiToken)
+                .urlEncodingEnabled(false)
+                .body(xml)
+                .contentType("application/xml");
+
+
+        return importDDI.post(postString);
     }
 }
