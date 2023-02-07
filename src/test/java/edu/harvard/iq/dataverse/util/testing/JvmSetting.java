@@ -35,7 +35,6 @@ import java.lang.annotation.Target;
 @Target({ ElementType.METHOD, ElementType.TYPE })
 @Inherited
 @Repeatable(JvmSetting.JvmSettings.class)
-@ExtendWith(JvmSettingExtension.class)
 @ResourceLock(value = Resources.SYSTEM_PROPERTIES, mode = ResourceAccessMode.READ_WRITE)
 public @interface JvmSetting {
     

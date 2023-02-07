@@ -133,6 +133,14 @@
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
+    
+            <dependency>
+                <groupId>org.jboss.arquillian</groupId>
+                <artifactId>arquillian-bom</artifactId>
+                <version>${arquillian-bom.version}</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
         </dependencies>
     </dependencyManagement>
  
@@ -183,7 +191,10 @@
         <junit.vintage.version>${junit.jupiter.version}</junit.vintage.version>
         <mockito.version>2.28.2</mockito.version>
         <xmlunit.version>2.8.4</xmlunit.version>
-        
+    
+        <arquillian-bom.version>1.7.0.Alpha14</arquillian-bom.version>
+        <arquillian-payara.version>2.6-SNAPSHOT</arquillian-payara.version>
+    
         <checkstyle.version>9.3</checkstyle.version>
         
         <!-- Official Maven Plugins -->

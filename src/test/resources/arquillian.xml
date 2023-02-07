@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<arquillian xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://jboss.org/schema/arquillian"
+            xsi:schemaLocation="http://jboss.org/schema/arquillian https://jboss.org/schema/arquillian/arquillian_1_0.xsd">
+    <defaultProtocol type="Servlet 3.0">
+        <property name="port">${tc.payara.http.port}</property>
+        <property name="host">${tc.payara.host}</property>
+    </defaultProtocol>
+    
+    <!-- See all options at https://docs.payara.fish/community/docs/Technical%20Documentation/Ecosystem/Connector%20Suites/Arquillian%20Containers/Payara%20Server%20Remote.html -->
+    <container qualifier="gdcc-base" default="true">
+        <configuration>
+            <property name="httpHost">${tc.payara.host}</property>
+            <property name="httpPort">${tc.payara.http.port}</property>
+            <property name="adminHost">${tc.payara.host}</property>
+            <property name="adminPort">${tc.payara.admin.port}</property>
+            <property name="adminUser">${tc.payara.admin.user}</property>
+            <property name="adminPassword">${tc.payara.admin.pass}</property>
+            <property name="adminHttps">true</property>
+            <property name="ignoreCertificates">true</property>
+            <property name="authorisation">true</property>
+        </configuration>
+    </container>
+</arquillian>
