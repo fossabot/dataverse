@@ -68,6 +68,17 @@ public enum JvmSettings {
     SCOPE_API(PREFIX, "api"),
     API_SIGNING_SECRET(SCOPE_API, "signing-secret"),
     
+    // MAIL SETTINGS
+    SCOPE_MAIL(PREFIX, "mail"),
+    MAIL_PROTOCOL(SCOPE_MAIL, "protocol"),
+    MAIL_DEBUG(SCOPE_MAIL, "debug"),
+    MAIL_HOST(SCOPE_MAIL, "host"),
+    MAIL_PORT(SCOPE_MAIL, "port"),
+    MAIL_FROM(SCOPE_MAIL, "from"),
+    MAIL_AUTH(SCOPE_MAIL, "auth"),
+    MAIL_USER(SCOPE_MAIL, "user"),
+    MAIL_PASSWORD(SCOPE_MAIL, "password"),
+    
     ;
     
     private static final String SCOPE_SEPARATOR = ".";
