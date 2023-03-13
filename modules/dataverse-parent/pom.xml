@@ -264,6 +264,35 @@
                 </plugin>
             </plugins>
         </pluginManagement>
+        <plugins>
+            <!-- Include this plugin by default in all builds -->
+            <!--
+                This will get details about the underlying git repository as Maven properties.
+                Container images will include the recent commit id in image label tags.
+                The application's microprofile-config.properties will contain the branch name to
+                create a fuse for potentially dangerous features disabled in production.
+            -->
+            <plugin>
+                <groupId>io.github.git-commit-id</groupId>
+                <artifactId>git-commit-id-maven-plugin</artifactId>
+                <version>5.0.0</version>
+                <executions>
+                    <execution>
+                        <id>retrieve-git-details</id>
+                        <goals>
+                            <goal>revision</goal>
+                        </goals>
+                        <phase>initialize</phase>
+                    </execution>
+                </executions>
+                <configuration>
+                    <dotGitDirectory>${project.basedir}/../../.git</dotGitDirectory>
+                    <dateFormatTimeZone>UTC</dateFormatTimeZone>
+                    <abbrevLength>8</abbrevLength>
+                    <verbose>false</verbose>
+                </configuration>
+            </plugin>
+        </plugins>
     </build>
     
     <!--Maven checks for dependencies from these repos in the order shown in the pom.xml
@@ -348,33 +377,6 @@
                 -->
                 <payara.version>5.2022.4</payara.version>
             </properties>
-    
-            <build>
-                <plugins>
-                    <!-- This will get the current commit id to include in image tags of container builds as Maven properties -->
-                    <plugin>
-                        <groupId>io.github.git-commit-id</groupId>
-                        <artifactId>git-commit-id-maven-plugin</artifactId>
-                        <version>5.0.0</version>
-                        <executions>
-                            <execution>
-                                <id>retrieve-git-details</id>
-                                <goals>
-                                    <goal>revision</goal>
-                                </goals>
-                                <phase>initialize</phase>
-                            </execution>
-                        </executions>
-                        <configuration>
-                            <dotGitDirectory>${project.basedir}/../../.git</dotGitDirectory>
-                            <dateFormatTimeZone>UTC</dateFormatTimeZone>
-                            <abbrevLength>8</abbrevLength>
-                            <verbose>false</verbose>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-            
         </profile>
     </profiles>
     
