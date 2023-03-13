@@ -65,10 +65,15 @@ public enum JvmSettings {
     API_SIGNING_SECRET(SCOPE_API, "signing-secret"),
     
     // FEATURE FLAGS SETTINGS
-    SCOPE_FLAGS(PREFIX, "feature"),
+    SCOPE_FEATURE(PREFIX, "feature"),
+    FEATURE_PROTECTED_BRANCH_NAME(SCOPE_FEATURE, "protected-branch-name"),
+    FEATURE_BUILD_BRANCH_NAME(SCOPE_FEATURE, "build-branch-name"),
     // This is a special placeholder-type setting entry, to be filled in by FeatureFlag entries during lookup.
     // Avoids adding flag entries twice.
-    FEATURE_FLAG(SCOPE_FLAGS),
+    SCOPE_FEATURE_EMERGING(SCOPE_FEATURE, "emerging"),
+    FEATURE_EMERGING_FLAG(SCOPE_FEATURE_EMERGING),
+    SCOPE_FEATURE_EXPERIMENTAL(SCOPE_FEATURE, "experimental"),
+    FEATURE_EXPERIMENTAL_FLAG(SCOPE_FEATURE_EXPERIMENTAL),
     
     ;
     
