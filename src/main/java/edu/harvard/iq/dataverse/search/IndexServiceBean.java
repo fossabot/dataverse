@@ -54,7 +54,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
@@ -70,6 +69,7 @@ import javax.ejb.EJBException;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import static javax.ejb.TransactionAttributeType.REQUIRES_NEW;
+
 import javax.inject.Named;
 import javax.json.JsonObject;
 import javax.persistence.EntityManager;
@@ -92,8 +92,6 @@ import org.apache.tika.parser.AutoDetectParser;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.sax.BodyContentHandler;
-import org.eclipse.microprofile.config.Config;
-import org.eclipse.microprofile.config.ConfigProvider;
 import org.xml.sax.ContentHandler;
 
 @Stateless
@@ -101,7 +99,6 @@ import org.xml.sax.ContentHandler;
 public class IndexServiceBean {
 
     private static final Logger logger = Logger.getLogger(IndexServiceBean.class.getCanonicalName());
-    private static final Config config = ConfigProvider.getConfig();
 
     @PersistenceContext(unitName = "VDCNet-ejbPU")
     private EntityManager em;
@@ -361,10 +358,10 @@ public class IndexServiceBean {
 
     // nextToIndex contains datasets mapped by dataset id that were added for future indexing while the indexing was already ongoing for a given dataset
     // (if there already was a dataset scheduled for indexing, it is overwritten and only the most recently requested version is kept in the map)
-    private static final Map<Long, Dataset> NEXT_TO_INDEX = new ConcurrentHashMap<>();
+    static final Map<Long, Dataset> NEXT_TO_INDEX = new ConcurrentHashMap<>();
     // indexingNow is a set of dataset ids of datasets being indexed asynchronously right now
-    private static final Map<Long, Boolean> INDEXING_NOW = new ConcurrentHashMap<>();
-
+    static final Map<Long, Boolean> INDEXING_NOW = new ConcurrentHashMap<>();
+    
     // When you pass null as Dataset parameter to this method, it indicates that the indexing of the dataset with "id" has finished
     // Pass non-null Dataset to schedule it for indexing
     synchronized private static Dataset getNextToIndex(Long id, Dataset d) {
